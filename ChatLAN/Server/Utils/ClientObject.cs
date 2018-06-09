@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatLAN.Pages.Messager.UserControls
+namespace ChatLAN.Server.Utils
 {
-    public class Data
+    class ClientObject
     {
-        public string Name;
+
     }
 }

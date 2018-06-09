@@ -1,23 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using ChatLAN.Annotations;
-using ChatLAN.Pages;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 
@@ -37,15 +20,26 @@ namespace ChatLAN
             }, DispatcherPriority.Normal);
         }
 
-        public static event EventHandler Close;
+        public static void OpenPage(object obj)
+        {
+            
+            _frame.Navigate(obj);
+        }
+        public static void OpenPage(string pathToPage)
+        {
+            Uri u = new Uri(pathToPage, UriKind.Relative);
+            _frame.Invoke(() => _frame.Source = u);
+        }
+
+        public new static event EventHandler Close;
 
         private static MetroWindow _metroWindow;
-
+        private static Frame _frame;
         public MainWindow()
         {
             InitializeComponent();
             _metroWindow = this;
-            FrameStatic.Frame = this.Frame;
+            _frame = this.Frame;
             this.Closed += (sender, args) => Close?.Invoke(sender, null);
         }
     }

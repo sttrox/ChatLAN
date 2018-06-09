@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ChatLAN
+namespace ChatLAN.Server.Utils
 {
-    static class Serialized
+    static class DataClients
     {
         public static Dictionary<string, ObjClient> Clients = new Dictionary<string, ObjClient>();
 
@@ -18,7 +15,7 @@ namespace ChatLAN
                 if (client.Value.login == login) return true;
             return false;
         }
-        static Serialized()
+        static DataClients()
         {
             XmlSerializer formatter = new XmlSerializer(typeof(List<ObjClient>));
 

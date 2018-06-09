@@ -11,11 +11,15 @@ namespace ChatLAN
     [Serializable]
     public class ObjClient
     {
+        public event EventHandler<Message> SendMessage; 
         [XmlAttribute]
         public string passHash;
         [XmlAttribute]
         public string login;
-        private List<Message> messagesLs;
+        [XmlElement("Message")]
+        public List<Message> Messages;
+
+        public byte[] Avatar;
 
         public ObjClient()
         {

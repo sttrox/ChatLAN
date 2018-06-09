@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatLAN.Serializable
 {
-    class File
+    public class File
     {
         public byte[] Data;
         public string Name;

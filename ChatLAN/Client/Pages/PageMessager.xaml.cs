@@ -12,9 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ChatLAN.Pages.Messager.UsecControls;
 
-namespace ChatLAN.Pages
+namespace ChatLAN.Client.Pages
 {
     /// <summary>
     /// Логика взаимодействия для PageMessager.xaml
@@ -24,7 +23,6 @@ namespace ChatLAN.Pages
         public PageMessager()
         {
             InitializeComponent();
-            
         }
     }
 }

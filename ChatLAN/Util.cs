@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
-using System.Xml;
 using System.Xml.Serialization;
 
-namespace ChatLAN.Utils
+namespace ChatLAN
 {
     public static class Util
     {
         public static event UnhandledExceptionEventHandler UnhandledException;
+
         public static void SerializeObject<TObject>(TObject objSerializ, NetworkStream stream)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(TObject));
@@ -33,21 +29,31 @@ namespace ChatLAN.Utils
         //}
         public static TObject DeserializeObject<TObject>(byte[] bytes)
         {
-            TObject temp= default(TObject);
+            TObject temp = default(TObject);
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(TObject));
                 using (MemoryStream memory = new MemoryStream(bytes))
-                {
-                   temp = (TObject)serializer.Deserialize(memory);
-                }
+                    temp = (TObject) serializer.Deserialize(memory);
             }
             catch (InvalidOperationException e)
             {
-               UnhandledException?.Invoke(null,new UnhandledExceptionEventArgs(e,false));
+                UnhandledException?.Invoke(null, new UnhandledExceptionEventArgs(e, false));
             }
 
             return temp;
+        }
+
+        public static TObject ReadObject<TObject>(MemoryStream stream)
+        {
+            TObject obj = DeserializeObject<TObject>(stream.ToArray());
+            return obj;
+        }
+
+        public static TObject ReadObject<TObject>(TcpClient tcpClient)
+        {
+            TObject obj = DeserializeObject<TObject>(ReadAllBytes(tcpClient));
+            return obj;
         }
 
         public static string GetMD5(string @string)
@@ -62,12 +68,13 @@ namespace ChatLAN.Utils
             return stringBuilder.ToString();
         }
 
-        public enum TypeObject
+        private enum TypeMessageFromServer
         {
-            Signature
+            Message,
+            New
         }
 
-        public enum TypeMessage
+        public enum TypeSoketMessage
         {
             Connect,
             Disconnect,
@@ -76,6 +83,22 @@ namespace ChatLAN.Utils
             Ok,
             Bad
         }
+
+        public static string ReadString(NetworkStream stream, int size)
+        {
+            byte[] data = new byte[64]; // буфер для получаемых данных
+            StringBuilder builder = new StringBuilder();
+            int bufferSize = 0;
+            do
+            {
+                int tempSize = stream.Read(data, 0, data.Length);
+                bufferSize += tempSize;
+                builder.Append(Encoding.UTF8.GetString(data, 0, tempSize));
+            } while (bufferSize != size);
+
+            return builder.ToString(); //вывод сообщения
+        }
+
 
         public static MemoryStream ReadAllByte(TcpClient tcpClient)
         {
