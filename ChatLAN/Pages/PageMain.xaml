@@ -1,0 +1,123 @@
+﻿<Page x:Class="ChatLAN.Pages.PageMain"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:ChatLAN"
+      mc:Ignorable="d"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PageMain"
+      xmlns:ChatLAN="clr-namespace:ChatLAN.Pages"
+      xmlns:s="clr-namespace:System;assembly=mscorlib"
+      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+      xmlns:System="clr-namespace:System;assembly=System.Data">
+    <Page.Resources>
+        <s:Boolean x:Key="BoolServer">True</s:Boolean>
+    </Page.Resources>
+    <Grid>
+
+        <StackPanel HorizontalAlignment="Center" Width="300">
+            <TextBlock HorizontalAlignment="Center">Режим работы</TextBlock>
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <TextBlock Padding="5" x:Name="TbServer">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}"
+                                             Value="False">
+                                    <Setter Property="Background" Value="DeepSkyBlue" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                    Сервер
+                </TextBlock>
+                <mah:ToggleSwitchButton Margin="20,0" Name="ToggleSwitchButton"
+                                        Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}" />
+                <TextBlock Padding="5" Name="TbClient">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}"
+                                             Value="True">
+                                    <Setter Property="Background" Value="DeepSkyBlue" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                    Клиент
+                </TextBlock>
+            </StackPanel>
+            <TextBlock>Адрес</TextBlock>
+            <TextBox
+                Name="TbAdress" >
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}" Value="false">
+                               <Setter Property="Text" Value="127.0.0.1"/>
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger> 
+                            <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}" Value="true">
+                                <Setter Property="Text" Value="127.0.0.1"/>
+                                <Setter Property="IsEnabled" Value="True"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <TextBlock>Порт</TextBlock>
+            <mah:NumericUpDown 
+                Name="NumPort"
+                TextAlignment="Left" Value="8888"
+                               Maximum="65536"
+                               Minimum="80" />
+
+            <TextBlock>Логин</TextBlock>
+            <TextBox Name="TbLogin">Login</TextBox>
+            <TextBlock>Пароль</TextBlock>
+            <TextBox Name="TbPass">1234</TextBox>
+
+
+            <StackPanel Name="PanelOfServer">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}"
+                                         Value="true">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+
+                </StackPanel.Style>
+                <Button Name="BtnStart" Margin="20,9" Click="BtnStart_OnClick">
+                    Запустить
+                </Button>
+            </StackPanel>
+            <Grid Name="PanelOfClient" Margin="0,9">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}"
+                                         Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+
+                </Grid.Style>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="42" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Name="BtnSignIn" Click="BtnSign_OnClick"> Авторизироваться</Button>
+                <Button Grid.Column="2" Name="BtnSignUp" Click="BtnSign_OnClick"> Зарегистрироваться</Button>
+            </Grid>
+            <mah:ProgressRing Name="ProgressRing" Visibility="Collapsed" Height="42" Width="42"> </mah:ProgressRing>
+        </StackPanel>
+
+
+    </Grid>
+</Page>
