@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using ChatLAN.Objects;
 
@@ -9,15 +10,34 @@ namespace ChatLAN.Client
 {
     public class ClientCore
     {
-        event EventHandler<Message> ChatAdd;
+        public event EventHandler<Message> ChatAdd;
+        public static event EventHandler<Dictionary<string, Message>> RefreshListChat; 
+        private event EventHandler<ChatMessage> AcceptMessage;
+
         public static Dictionary<string, Message> Chats = new Dictionary<string, Message>();
+        public static List<string> ListAllUsers = new List<string>();
+        public static Dictionary<string, Message> ListAllChatMessage = new Dictionary<string, Message>();
         public event EventHandler<string> Error;
 
         private static ClientCore _client;
         private readonly TcpClient _tcpClient;
 
+       
+
         private ClientCore(byte[] ipAdress, int port)
         {
+            AcceptMessage += OnAcceptMessage;
+            Chats.Add("Azzara",
+                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
+            Chats.Add("Pato",
+                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
+            Chats.Add("Lain",
+                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
+            Chats.Add("AntiLoop",
+                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
+            Chats.Add("Withay",
+                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
+            RefreshListChat?.Invoke(null,ListAllChatMessage);
             try
             {
                 _tcpClient = new TcpClient();
@@ -41,11 +61,20 @@ namespace ChatLAN.Client
             }
         }
 
+        private void OnAcceptMessage(object sender, ChatMessage e)
+        {
+            if (ListAllChatMessage.ContainsKey(e.Login))
+                //todo Data
+                ListAllChatMessage[e.Login].Text = e.Message.Text;
+            else
+                ListAllChatMessage.Add(e.Login, e.Message);
+        }
+
+
         public static ClientCore InicializeClient(byte[] ipAdress, int port)
         {
             if (_client == null)
                 _client = new ClientCore(ipAdress, port);
-
 
             return _client;
         }
@@ -104,7 +133,7 @@ namespace ChatLAN.Client
 
 
         public bool Sign(NetworkStream stream, Signature clien, Util.TypeSoketMessage typeSoketMessage)
-        { 
+        {
             Util.SerializeTypeObject(typeSoketMessage, clien, stream);
             if (Util.TypeSoketMessage.Ok ==
                 Util.DeserializeTypeObject<string>(Util.ReadAllBytes(_tcpClient))
@@ -116,37 +145,42 @@ namespace ChatLAN.Client
         public void ReceiveMessage()
         {
             var p = Util.DeserializeTypeObject<AvatarUsers>(Util.ReadAllBytes(_tcpClient));
-            while (true)
+            foreach (AvatarUser avatarUser in p.TObj.ListAvatarUsers)
             {
-                try
-                {
-                    //MessageFromServer messageFromServer =
-                    //    Util.DeserializeObject<MessageFromServer>(Util.ReadAllBytes(_tcpClient));
-
-                    // messageFromServer
-
-                    //byte[] data = new byte[64]; // буфер для получаемых данных
-                    //StringBuilder builder = new StringBuilder();
-                    //int bytes = 0;
-                    //do
-                    //{
-                    //    bytes = stream.Read(data, 0, data.Length);
-                    //    builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                    //} while (stream.DataAvailable);
-
-                    //string message = builder.ToString();
-                    //MessageBox.Show(message);
-
-                    //Console.WriteLine(message); //вывод сообщения
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("Подключение прервано!"); //соединение было прервано
-                    Console.ReadLine();
-                    // Disconnect();
-                }
+                //todo лишнее хранить все аватары в памяти
+                ListAllUsers.Add(avatarUser.Name);
             }
+            //while (true)
+            //{
+            //    try
+            //    {
+            //        //MessageFromServer messageFromServer =
+            //        //    Util.DeserializeObject<MessageFromServer>(Util.ReadAllBytes(_tcpClient));
+     //                   AcceptMessage?.Invoke(null, new ChatMessage(null,null));
+            //        // messageFromServer
+
+            //        //byte[] data = new byte[64]; // буфер для получаемых данных
+            //        //StringBuilder builder = new StringBuilder();
+            //        //int bytes = 0;
+            //        //do
+            //        //{
+            //        //    bytes = stream.Read(data, 0, data.Length);
+            //        //    builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+            //        //} while (stream.DataAvailable);
+
+            //        //string message = builder.ToString();
+            //        //MessageBox.Show(message);
+
+            //        //Console.WriteLine(message); //вывод сообщения
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Console.WriteLine(ex.Message);
+            //        Console.WriteLine("Подключение прервано!"); //соединение было прервано
+            //        Console.ReadLine();
+            //        // Disconnect();
+            //    }
+            //}
         }
 
         static void Disconnect()
@@ -154,5 +188,17 @@ namespace ChatLAN.Client
             _client._tcpClient?.Close(); //отключение клиента
             Environment.Exit(0); //завершение процесса
         }
-    }
+
+       
+    } internal class ChatMessage
+        {
+            public string Login;
+            public Message Message;
+
+            public ChatMessage(string login, Message message)
+            {
+                Login = login;
+                Message = message;
+            }
+        }
 }

@@ -7,7 +7,7 @@
              xmlns:userControls="clr-namespace:ChatLAN.Client.Pages.Messager.UserControls"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="300">
-    <ScrollViewer>
-        <ListBox VerticalContentAlignment="Top" Name="ItemsControl"/>
-    </ScrollViewer>
+    <!--<ScrollViewer  HorizontalScrollBarVisibility="Disabled"/>-->
+    <ListBox VerticalContentAlignment="Top" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Name="ItemsControl" BorderThickness="0" SnapsToDevicePixels="True"/>
+    <!--</ScrollViewer>-->
 </UserControl>

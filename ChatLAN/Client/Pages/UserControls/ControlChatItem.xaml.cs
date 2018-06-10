@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Brush = System.Drawing.Brush;
 
 namespace ChatLAN.Client.Pages.Messager.UserControls
 {
@@ -20,7 +23,35 @@ namespace ChatLAN.Client.Pages.Messager.UserControls
 
         public string UriImage
         {
-            set => ImageBrush.ImageSource = new BitmapImage(new Uri(value, UriKind.Relative));
+            set
+            {
+                if (File.Exists($"{Environment.CurrentDirectory}/{value}"))
+
+                    Ellipse.Fill = new ImageBrush(new BitmapImage(new Uri(value, UriKind.Relative)));
+//ImageBrush.ImageSource = new BitmapImage(new Uri(value, UriKind.Relative));
+                else
+                {
+                    TbHideText.Text = new string(Login.ToCharArray(0, 2));
+                    Ellipse.Fill = new VisualBrush(TbHideText)
+                    {
+                        Viewbox = Rect.Parse("0.1,0.1,0.8,0.8")
+                    };
+                }
+            }
+        }
+
+        public string BackgroundRound
+        {
+
+            set
+            {
+                byte[] color = new byte[3];
+                for (int i = 0; i < 3; i++)
+                {
+                    color[i]= Byte.Parse(value.Split(',')[i]);
+                }
+                TbHideText.Background = new SolidColorBrush(Color.FromRgb(color[0],color[1],color[2]));
+        }
         }
 
         public string Login
@@ -37,13 +68,12 @@ namespace ChatLAN.Client.Pages.Messager.UserControls
         }
 
 
-        public ControlChatItem(string uriImage = null, string login = null, string text = null):this()
+        public ControlChatItem(string uriImage = null, string login = null, string text = null) : this()
         {
-            UriImage = uriImage;
+            
             Login = login;
+            UriImage = uriImage;
             Text = text;
         }
-
-       
     }
 }

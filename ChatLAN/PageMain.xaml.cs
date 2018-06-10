@@ -20,7 +20,7 @@ namespace ChatLAN
         public PageMain()
         {
             InitializeComponent();
-            DataClients.Clients.Add("81DC9BDB52D04DC20036DBD8313ED055", new ObjClient()
+            DataClients.Users.Add("81DC9BDB52D04DC20036DBD8313ED055", new ObjUser()
             {
                 login = "Login",
                 passHash = "81DC9BDB52D04DC20036DBD8313ED055"

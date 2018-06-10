@@ -69,7 +69,7 @@ namespace ChatLAN
         //                    Util.SerializeObject(Util.TypeSoketMessage.Ok, tcpClient.GetStream());
         //                    //начинаем слушать тут
         //                    clients.Add(new ClientObject(tcpClient));
-        //                    AvatarUsers.AvatarUsers.Add(client.HashPass, new ObjClient(client.HashPass, client.Login));
+        //                    AvatarUsers.AvatarUsers.Add(client.HashPass, new ObjUser(client.HashPass, client.Login));
         //                    continue;
         //                }
 

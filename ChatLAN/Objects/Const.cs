@@ -11,6 +11,7 @@ namespace ChatLAN.Objects
     {
         
         public const string ServerPathToAvatarUsers = "/Users/Avatar/";
+        public const string ClientPathToAvatarUsers = "/Client/UsersAvatar/";
 
 
     }

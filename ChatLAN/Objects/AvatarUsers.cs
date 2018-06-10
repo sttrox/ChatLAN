@@ -19,26 +19,34 @@ namespace ChatLAN.Objects
             AddAllImage(listUsers);
         }
 
+        public AvatarUsers(IEnumerable<ObjUser> listUsers)
+        {
+            foreach (var user in listUsers)
+                AddImage(user.login);
+        }
+
         public AvatarUsers()
         {
+        }
+
+        public void AddImage(string login)
+        {
+            byte[] bytes;
+            string path = $"{Environment.CurrentDirectory}{Const.ServerPathToAvatarUsers}{login}.jpg";
+
+            if (!System.IO.File.Exists(path))
+                bytes = new byte[] {0};
+            else
+                using (FileStream fileStream = new FileStream(path, FileMode.Open))
+                    bytes = Util.ReadAllByte(fileStream);
+
+            ListAvatarUsers.Add(new AvatarUser(bytes, login));
         }
 
         public void AddAllImage(IEnumerable<string> listUsers)
         {
             foreach (var user in listUsers)
-            {
-                byte[] bytes;
-                string path =  $"{Environment.CurrentDirectory}{Const.ServerPathToAvatarUsers}{user}.jpg";
-
-                if (!System.IO.File.Exists(path))
-                    bytes = new byte[] {0};
-                else
-                    using (FileStream fileStream = new FileStream(path, FileMode.Open))
-                        bytes = Util.ReadAllByte(fileStream);
-
-
-                ListAvatarUsers.Add(new AvatarUser(bytes, user));
-            }
+                AddImage(user);
         }
 
         public void AddAllImageAndClear(IEnumerable<string> listUsers)

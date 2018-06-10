@@ -5,8 +5,9 @@ using System.Xml.Serialization;
 namespace ChatLAN.Objects
 {
     [Serializable]
-    public class ObjClient
+    public class ObjUser
     {
+        //todo реализовать наследование в котором нет passHash и Messages
         public event EventHandler<Message> SendMessage; 
         [XmlAttribute]
         public string passHash;
@@ -17,11 +18,11 @@ namespace ChatLAN.Objects
 
         public byte[] Avatar;
 
-        public ObjClient()
+        public ObjUser()
         {
         }
 
-        public ObjClient(string passHash, string login)
+        public ObjUser(string passHash, string login)
         {
             this.passHash = passHash;
             this.login = login;

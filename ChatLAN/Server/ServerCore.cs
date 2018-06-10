@@ -63,9 +63,9 @@ namespace ChatLAN.Server
         private void ListenClient(object sender, TcpClient e)
         {
             Util.SerializeTypeObject(Util.TypeSoketMessage.ListAvatar,
-                new AvatarUsers(DataClients.Clients.Keys), e.GetStream());
+                new AvatarUsers(DataClients.Users.Values), e.GetStream());
   
-            //Util.SerializeObject(new AvatarUsers(DataClients.Clients.Keys),e.GetStream() );
+            //Util.SerializeObject(new AvatarUsers(DataClients.Users.Keys),e.GetStream() );
             while (true)
             {
                 
@@ -98,14 +98,14 @@ namespace ChatLAN.Server
                         Util.SerializeTypeObject(Util.TypeSoketMessage.Ok,"Регистрация прошла успешно" ,tcpClient.GetStream());
                         AddClientOnline(tcpClient);
                         Server.Pages.Server.PrintText("Зарегистрировался " + client.Login);
-                        DataClients.Clients.Add(client.HashPass, new ObjClient(client.HashPass, client.Login));
+                        DataClients.Users.Add(client.HashPass, new ObjUser(client.HashPass, client.Login));
                         continue;
                     }
 
 
                     if (typeMessage.TypeSoketMessage == Util.TypeSoketMessage.SignIn &&
-                        DataClients.Clients.ContainsKey(client.HashPass) &&
-                        DataClients.Clients[client.HashPass].login == client.Login)
+                        DataClients.Users.ContainsKey(client.HashPass) &&
+                        DataClients.Users[client.HashPass].login == client.Login)
                     {
                         Util.SerializeTypeObject(Util.TypeSoketMessage.Ok,"Авторизация прошла успешно", tcpClient.GetStream());
                         Server.Pages.Server.PrintText("Авторизировался " + client.Login);

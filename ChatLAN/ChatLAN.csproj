@@ -62,6 +62,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client\Pages\UserControls\ControlBarSendMessage.xaml.cs">
+      <DependentUpon>ControlBarSendMessage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Client\Pages\UserControls\ControlChatItem.xaml.cs">
       <DependentUpon>ControlChatItem.xaml</DependentUpon>
     </Compile>
@@ -70,6 +73,15 @@
     </Compile>
     <Compile Include="Client\Pages\PageMessager.xaml.cs">
       <DependentUpon>PageMessager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Client\Pages\UserControls\ControlMessag.xaml.cs">
+      <DependentUpon>ControlMessag.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Client\Pages\UserControls\ControlMessageaAvatar.xaml.cs">
+      <DependentUpon>ControlMessageaAvatar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Client\Pages\UserControls\ControlPanelMessage.xaml.cs">
+      <DependentUpon>ControlPanelMessage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Objects\AvatarUser.cs" />
     <Compile Include="Objects\AvatarUsers.cs" />
@@ -82,15 +94,31 @@
     <Compile Include="Server\Utils\DataClients.cs" />
     <Compile Include="Objects\File.cs" />
     <Compile Include="Objects\Message.cs" />
-    <Compile Include="Objects\ObjClient.cs" />
+    <Compile Include="Objects\ObjUser.cs" />
     <Compile Include="ServerObject.cs" />
     <Compile Include="Client\ClientCore.cs" />
     <Compile Include="Util.cs" />
+    <Page Include="Client\Pages\UserControls\ControlBarSendMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Client\Pages\UserControls\ControlChatItem.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Client\Pages\PageMessager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Client\Pages\UserControls\ControlMessag.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Client\Pages\UserControls\ControlMessageaAvatar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Client\Pages\UserControls\ControlPanelMessage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -159,7 +187,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Client\Data\Image\inset.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Client\Data\Image\B6pW1T4c8MQ.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

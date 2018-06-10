@@ -13,17 +13,20 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ChatLAN.Client.Pages
+namespace ChatLAN.Client.Pages.UserControls
 {
     /// <summary>
-    /// Логика взаимодействия для PageMessager.xaml
+    /// Логика взаимодействия для ControlMessag.xaml
     /// </summary>
-    public partial class PageMessager : Page
+    public partial class ControlMessag : UserControl
     {
-        public PageMessager()
+        public string Text
+        {
+            set => TextBlock.Text=value;
+        }
+        public ControlMessag()
         {
             InitializeComponent();
-            
         }
     }
 }
