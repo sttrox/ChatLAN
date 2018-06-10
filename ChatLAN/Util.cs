@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Serialization;
+using ChatLAN.Objects;
 
 namespace ChatLAN
 {
@@ -11,23 +12,29 @@ namespace ChatLAN
     {
         public static event UnhandledExceptionEventHandler UnhandledException;
 
-        public static void SerializeObject<TObject>(TObject objSerializ, NetworkStream stream)
+        private static void SerializeObject<TObject>(TObject objSerializ, NetworkStream stream)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(TObject));
             serializer.Serialize(stream, objSerializ);
+            using (StreamWriter memoryStream = new StreamWriter($"{Environment.CurrentDirectory}/log.xml",true))
+            {
+                serializer.Serialize(memoryStream, objSerializ);
+            }
+
         }
 
-        //public static TObject DeserializeObject<TObject>(MemoryStream memory)
-        //{
-        //    XmlSerializer serializer = new XmlSerializer(typeof(TObject));
-        //    using (FileStream fs = new FileStream(".xml", FileMode.OpenOrCreate))
-        //        fs.Write(memory.ToArray(), 0, memory.ToArray().Length);
+        public static void SerializeTypeObject<TObject>(Util.TypeSoketMessage message, TObject objSerializ,
+            NetworkStream stream)
+        {
+            SerializeObject(new TypeMessage<TObject>(objSerializ, message), stream);
+        }
 
-        //    using (FileStream fs = new FileStream(".xml", FileMode.OpenOrCreate))
-        //        return (TObject) serializer.Deserialize(fs);
+        public static TypeMessage<TObject> DeserializeTypeObject<TObject>(byte[] bytes)
+        {
+            return DeserializeObject<TypeMessage<TObject>>(bytes);
+        }
 
-        //}
-        public static TObject DeserializeObject<TObject>(byte[] bytes)
+        private static TObject DeserializeObject<TObject>(byte[] bytes)
         {
             TObject temp = default(TObject);
             try
@@ -44,18 +51,6 @@ namespace ChatLAN
             return temp;
         }
 
-        public static TObject ReadObject<TObject>(MemoryStream stream)
-        {
-            TObject obj = DeserializeObject<TObject>(stream.ToArray());
-            return obj;
-        }
-
-        public static TObject ReadObject<TObject>(TcpClient tcpClient)
-        {
-            TObject obj = DeserializeObject<TObject>(ReadAllBytes(tcpClient));
-            return obj;
-        }
-
         public static string GetMD5(string @string)
         {
             MD5 md5 = MD5.Create();
@@ -68,25 +63,24 @@ namespace ChatLAN
             return stringBuilder.ToString();
         }
 
-        private enum TypeMessageFromServer
-        {
-            Message,
-            New
-        }
-
         public enum TypeSoketMessage
         {
-            Connect,
             Disconnect,
             SignIn,
             SingUp,
             Ok,
-            Bad
+            Bad,
+            ListAvatar
         }
 
-        public static string ReadString(NetworkStream stream, int size)
+        public static string ReadString(MemoryStream stream)
         {
-            byte[] data = new byte[64]; // буфер для получаемых данных
+            throw new NotImplementedException("Реализовать лог в файл");
+            using (StreamReader streamReader = new StreamReader(stream))
+            {
+                return streamReader.ReadToEnd();
+            }
+            byte[] data = new byte[8192]; // буфер для получаемых данных
             StringBuilder builder = new StringBuilder();
             int bufferSize = 0;
             do
@@ -94,25 +88,34 @@ namespace ChatLAN
                 int tempSize = stream.Read(data, 0, data.Length);
                 bufferSize += tempSize;
                 builder.Append(Encoding.UTF8.GetString(data, 0, tempSize));
-            } while (bufferSize != size);
+            } while (stream.CanRead);
 
+            string t = builder.ToString();
             return builder.ToString(); //вывод сообщения
         }
 
+        public static byte[] ReadAllByte(FileStream stream)
+        {
+            byte[] array = new byte[stream.Length];
+            stream.Read(array, 0, array.Length);
+            return array;
+        }
 
         public static MemoryStream ReadAllByte(TcpClient tcpClient)
         {
-            MemoryStream streamOut = new MemoryStream();
-            NetworkStream streamIn = tcpClient.GetStream();
-            byte[] buffer = new byte[64];
-            int size = 0;
-            do
+            using (MemoryStream streamOut = new MemoryStream())
             {
-                size = streamIn.Read(buffer, 0, buffer.Length);
-                streamOut.Write(buffer, 0, size);
-            } while (streamIn.DataAvailable);
+                NetworkStream streamIn = tcpClient.GetStream();
+                byte[] buffer = new byte[64];
+                int size = 0;
+                do
+                {
+                    size = streamIn.Read(buffer, 0, buffer.Length);
+                    streamOut.Write(buffer, 0, size);
+                } while (streamIn.DataAvailable);
 
-            return streamOut;
+                return streamOut;
+            }
         }
 
         public static byte[] ReadAllBytes(TcpClient tcpClient)

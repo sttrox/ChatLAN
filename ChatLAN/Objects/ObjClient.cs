@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using ChatLAN.Serializable;
 
-namespace ChatLAN
+namespace ChatLAN.Objects
 {
     [Serializable]
     public class ObjClient

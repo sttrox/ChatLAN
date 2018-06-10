@@ -4,22 +4,56 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using ChatLAN.Objects;
-using ChatLAN.Serializable;
 
 namespace ChatLAN.Client
 {
     public class ClientCore
     {
-        public event EventHandler<Message> ChatAdd;
+        event EventHandler<Message> ChatAdd;
         public static Dictionary<string, Message> Chats = new Dictionary<string, Message>();
         public event EventHandler<string> Error;
 
-        public void AddChat(string login, Message message)
-        {   
-            Chats.Add(login, message);
-            ChatAdd?.Invoke(null,message);
+        private static ClientCore _client;
+        private readonly TcpClient _tcpClient;
+
+        private ClientCore(byte[] ipAdress, int port)
+        {
+            try
+            {
+                _tcpClient = new TcpClient();
+                _tcpClient.Connect(new IPAddress(ipAdress), port);
+            }
+            catch (SocketException e)
+            {
+                _tcpClient = null;
+
+                Error?.Invoke(null, "Сокет занят");
+            }
+
+            catch (ObjectDisposedException e)
+            {
+                _tcpClient = null;
+                Error?.Invoke(null, "Соединение разорвано");
+            }
+            finally
+            {
+                MainWindow.Close += (sender, args) => Disconnect();
+            }
         }
-       public class Auth
+
+        public static ClientCore InicializeClient(byte[] ipAdress, int port)
+        {
+            if (_client == null)
+                _client = new ClientCore(ipAdress, port);
+
+
+            return _client;
+        }
+
+        public NetworkStream GetNetworkStream() => _tcpClient.GetStream();
+
+
+        public class Auth
         {
             public event EventHandler<string> Error;
             public event EventHandler<string> Join;
@@ -35,12 +69,8 @@ namespace ChatLAN.Client
                     Util.UnhandledException += (o, args) =>
                         badRequest = true;
 
-                    if (client.Sign(
-                        client.GetNetworkStream(),
-                        new Signature(
-                            login,
-                            Util.GetMD5(pass),
-                            Util.TypeSoketMessage.SignIn)))
+                    if (client.Sign(client.GetNetworkStream(),
+                        new Signature(login, Util.GetMD5(pass)), Util.TypeSoketMessage.SignIn))
                     {
                         Join?.Invoke(null, "Всё хорошо");
                         ClientCore.InicializeClient(ipAdress, port).ReceiveMessage();
@@ -61,72 +91,37 @@ namespace ChatLAN.Client
 
             public void SingOut(byte[] ipAdress, int port, string login, string pass)
             {
-                throw  new NotImplementedException();
+                throw new NotImplementedException();
             }
         }
 
-        private static ClientCore _client;
 
-        private readonly TcpClient _tcpClient;
-
-        private ClientCore(byte[] ipAdress, int port)
+        public void AddChat(string login, Message message)
         {
-            try
-            {
-                _tcpClient = new TcpClient();
-                _tcpClient.Connect(new IPAddress(ipAdress), port);
-                
-            }
-            catch (SocketException e)
-            {
-                _tcpClient = null;
-
-                Error?.Invoke(null, "Сокет занят");
-            }
-
-            catch (ObjectDisposedException e)
-            {
-                _tcpClient = null;
-                Error?.Invoke(null, "Соединение разорвано");
-            }
-            finally
-            {
-                MainWindow.Close += (sender, args) => Disconnect();
-            }
-            
+            Chats.Add(login, message);
+            ChatAdd?.Invoke(null, message);
         }
 
-        public static ClientCore InicializeClient(byte[] ipAdress, int port)
-        {
-            if (_client == null)
-                _client = new ClientCore(ipAdress, port);
 
-   
-            return _client;
-        }
-
-        public NetworkStream GetNetworkStream()
-        {
-            return _tcpClient.GetStream();
-        }
-
-        public bool Sign(NetworkStream stream, Signature clien)
-        {
-            Util.SerializeObject(clien, stream);
+        public bool Sign(NetworkStream stream, Signature clien, Util.TypeSoketMessage typeSoketMessage)
+        { 
+            Util.SerializeTypeObject(typeSoketMessage, clien, stream);
             if (Util.TypeSoketMessage.Ok ==
-                Util.DeserializeObject<Util.TypeSoketMessage>(Util.ReadAllBytes(_tcpClient)))
+                Util.DeserializeTypeObject<string>(Util.ReadAllBytes(_tcpClient))
+                    .TypeSoketMessage)
                 return true;
             return false;
         }
 
         public void ReceiveMessage()
         {
+            var p = Util.DeserializeTypeObject<AvatarUsers>(Util.ReadAllBytes(_tcpClient));
             while (true)
             {
                 try
                 {
-                    MessageFromServer messageFromServer =
-                        Util.DeserializeObject<MessageFromServer>(Util.ReadAllBytes(_tcpClient));
+                    //MessageFromServer messageFromServer =
+                    //    Util.DeserializeObject<MessageFromServer>(Util.ReadAllBytes(_tcpClient));
 
                     // messageFromServer
 
@@ -153,38 +148,11 @@ namespace ChatLAN.Client
                 }
             }
         }
+
         static void Disconnect()
         {
             _client._tcpClient?.Close(); //отключение клиента
             Environment.Exit(0); //завершение процесса
         }
-
-
-
-
-    [Serializable]
-    public class MessageFromServer
-    {
     }
-
-   
-
-    //[Serializable]
-    //public class Signature
-    //{
-    //    public string Login;
-    //    public string HashPass;
-    //    public Util.TypeSoketMessage TypeSoketMessage;
-
-    //    public Signature(string login, string hashPass, Util.TypeSoketMessage typeSoketMessage)
-    //    {
-    //        Login = login;
-    //        HashPass = hashPass;
-    //        TypeSoketMessage = typeSoketMessage;
-    //    }
-
-    //    public Signature()
-    //    {
-    //    }
-    }
-    }
+}

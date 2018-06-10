@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using ChatLAN.Objects;
 
 namespace ChatLAN.Server.Utils
 {
@@ -10,7 +11,7 @@ namespace ChatLAN.Server.Utils
         public static Dictionary<string, ObjClient> Clients = new Dictionary<string, ObjClient>();
 
         public static bool HasItemLogin(string login)
-        {
+        { 
             foreach (var client in Clients)
                 if (client.Value.login == login) return true;
             return false;

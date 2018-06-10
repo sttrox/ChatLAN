@@ -8,13 +8,12 @@ namespace ChatLAN.Objects
         {
             public string Login;
             public string HashPass;
-            public Util.TypeSoketMessage TypeSoketMessage;
 
-            public Signature(string login, string hashPass, Util.TypeSoketMessage typeSoketMessage)
+            public Signature(string login, string hashPass)
             {
                 Login = login;
                 HashPass = hashPass;
-                TypeSoketMessage = typeSoketMessage;
+         
             }
 
             public Signature()

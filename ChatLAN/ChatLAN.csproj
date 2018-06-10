@@ -71,14 +71,18 @@
     <Compile Include="Client\Pages\PageMessager.xaml.cs">
       <DependentUpon>PageMessager.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Objects\AvatarUser.cs" />
+    <Compile Include="Objects\AvatarUsers.cs" />
+    <Compile Include="Objects\Const.cs" />
     <Compile Include="Objects\Signature.cs" />
-    <Compile Include="Serializable\ObjChat.cs" />
+    <Compile Include="Objects\ObjChat.cs" />
+    <Compile Include="Objects\TypeMessage.cs" />
     <Compile Include="Server\ServerCore.cs" />
     <Compile Include="Server\Utils\ClientObject.cs" />
     <Compile Include="Server\Utils\DataClients.cs" />
-    <Compile Include="Serializable\File.cs" />
-    <Compile Include="Serializable\Message.cs" />
-    <Compile Include="Serializable\ObjClient.cs" />
+    <Compile Include="Objects\File.cs" />
+    <Compile Include="Objects\Message.cs" />
+    <Compile Include="Objects\ObjClient.cs" />
     <Compile Include="ServerObject.cs" />
     <Compile Include="Client\ClientCore.cs" />
     <Compile Include="Util.cs" />

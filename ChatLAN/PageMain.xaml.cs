@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using ChatLAN.Client;
+using ChatLAN.Objects;
 using ChatLAN.Server;
 using ChatLAN.Server.Utils;
 

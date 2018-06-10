@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using ChatLAN.Serializable;
+using ChatLAN.Objects;
 
 namespace ChatLAN.Client.Pages.Messager.UserControls
 {
@@ -17,7 +17,7 @@ namespace ChatLAN.Client.Pages.Messager.UserControls
         public void AddChat(Message message)
         {
 
-           // _chatItems.Add(new ControlChatItem(message.UriAvatar));
+            //_chatItems.Add(new ControlChatItem(message.UriAvatar));
         }
         public ControlListChat()
         {

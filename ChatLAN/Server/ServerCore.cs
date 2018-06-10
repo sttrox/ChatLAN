@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ChatLAN.Objects;
 using ChatLAN.Server.Utils;
 
 namespace ChatLAN.Server
@@ -31,8 +32,7 @@ namespace ChatLAN.Server
             try
             {
                 _tcpListener.Start();
-                object temp = new object();
-                ServerStart?.Invoke(temp, _tcpListener);
+                ServerStart?.Invoke(null, _tcpListener);
                 new Thread(Listen).Start();
             }
             catch (SocketException e)
@@ -62,8 +62,13 @@ namespace ChatLAN.Server
         //todo
         private void ListenClient(object sender, TcpClient e)
         {
+            Util.SerializeTypeObject(Util.TypeSoketMessage.ListAvatar,
+                new AvatarUsers(DataClients.Clients.Keys), e.GetStream());
+  
+            //Util.SerializeObject(new AvatarUsers(DataClients.Clients.Keys),e.GetStream() );
             while (true)
             {
+                
             }
         }
 
@@ -85,12 +90,12 @@ namespace ChatLAN.Server
                 while (true)
                 {
                     TcpClient tcpClient = _tcpListener.AcceptTcpClient();
-                    Objects.Signature client = Util.ReadObject<Objects.Signature>(tcpClient);
-
-                    if (client.TypeSoketMessage == Util.TypeSoketMessage.SingUp &&
+                    TypeMessage<Signature> typeMessage= Util.DeserializeTypeObject<Signature>(Util.ReadAllBytes(tcpClient));
+                    Signature client = typeMessage.TObj;
+                    if (typeMessage.TypeSoketMessage == Util.TypeSoketMessage.SingUp &&
                         !DataClients.HasItemLogin(client.Login))
                     {
-                        Util.SerializeObject(Util.TypeSoketMessage.Ok, tcpClient.GetStream());
+                        Util.SerializeTypeObject(Util.TypeSoketMessage.Ok,"Регистрация прошла успешно" ,tcpClient.GetStream());
                         AddClientOnline(tcpClient);
                         Server.Pages.Server.PrintText("Зарегистрировался " + client.Login);
                         DataClients.Clients.Add(client.HashPass, new ObjClient(client.HashPass, client.Login));
@@ -98,11 +103,11 @@ namespace ChatLAN.Server
                     }
 
 
-                    if (client.TypeSoketMessage == Util.TypeSoketMessage.SignIn &&
+                    if (typeMessage.TypeSoketMessage == Util.TypeSoketMessage.SignIn &&
                         DataClients.Clients.ContainsKey(client.HashPass) &&
                         DataClients.Clients[client.HashPass].login == client.Login)
                     {
-                        Util.SerializeObject(Util.TypeSoketMessage.Ok, tcpClient.GetStream());
+                        Util.SerializeTypeObject(Util.TypeSoketMessage.Ok,"Авторизация прошла успешно", tcpClient.GetStream());
                         Server.Pages.Server.PrintText("Авторизировался " + client.Login);
                         AddClientOnline(tcpClient);
                         continue;
@@ -111,7 +116,7 @@ namespace ChatLAN.Server
                     //Thread.Sleep(7420);
 
                     Server.Pages.Server.PrintText("Что-то пошло не так \n Имя клиента " + client.Login);
-                    Util.SerializeObject(Util.TypeSoketMessage.Bad, tcpClient.GetStream());
+                    Util.SerializeTypeObject(Util.TypeSoketMessage.Bad, "Данные отклонены", tcpClient.GetStream());
                 }
             }
             catch (Exception ex)

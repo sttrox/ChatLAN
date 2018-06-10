@@ -64,19 +64,19 @@ namespace ChatLAN
         //            Signature client = Util.ReadObject<Signature>(Util.ReadAllByte(tcpClient));
 
         //            if (client.TypeSoketMessage == Util.TypeSoketMessage.SingUp)
-        //                if (!DataClients.HasItemLogin(client.Login))
+        //                if (!AvatarUsers.HasItemLogin(client.Login))
         //                {
         //                    Util.SerializeObject(Util.TypeSoketMessage.Ok, tcpClient.GetStream());
         //                    //начинаем слушать тут
         //                    clients.Add(new ClientObject(tcpClient));
-        //                    DataClients.Clients.Add(client.HashPass, new ObjClient(client.HashPass, client.Login));
+        //                    AvatarUsers.AvatarUsers.Add(client.HashPass, new ObjClient(client.HashPass, client.Login));
         //                    continue;
         //                }
 
 
         //            if (client.TypeSoketMessage == Util.TypeSoketMessage.SignIn)
-        //                if (DataClients.Clients.ContainsKey(client.HashPass) &
-        //                    DataClients.Clients[client.HashPass].login == client.Login)
+        //                if (AvatarUsers.AvatarUsers.ContainsKey(client.HashPass) &
+        //                    AvatarUsers.AvatarUsers[client.HashPass].login == client.Login)
         //                {
         //                    Util.SerializeObject(Util.TypeSoketMessage.Ok, tcpClient.GetStream());
         //                    Server.Pages.Server.PrintText("Login " + client.Login);
