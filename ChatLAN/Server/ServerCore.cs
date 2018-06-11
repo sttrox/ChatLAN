@@ -16,9 +16,11 @@ namespace ChatLAN.Server
         public event EventHandler<TcpListener> ServerStart;
         public event EventHandler<String> Error;
 
+        private List<string> _listUserName= new List<string>();
+        private readonly List<Message> _listMessage;
         private event EventHandler<TcpClient> ClientOnlineAdd;
-        private TcpListener _tcpListener;
-        private List<TcpClient> _tcpClientsOnline = new List<TcpClient>();
+        private  TcpListener _tcpListener;
+        private  List<TcpClient> _tcpClientsOnline = new List<TcpClient>();
         private static ServerCore _serverCore;
 
         public void RemoveServer()
@@ -45,11 +47,11 @@ namespace ChatLAN.Server
 
         private ServerCore(int port)
         {
+            Util.UnhandledException += (sender, args) => Pages.Server.PrintText(args.ToString());
             _tcpListener = new TcpListener(IPAddress.Any, port);
             MainWindow.Close += (sender, args) => Disconnect();
 
-            //Запускаем прослушивание клиентов
-            ClientOnlineAdd += ListenClient;
+            _listMessage = Serializer.DeserializeMessage();
         }
 
         public static ServerCore InicilizeServer(int port)
@@ -60,22 +62,23 @@ namespace ChatLAN.Server
         }
 
         //todo
-        private void ListenClient(object sender, TcpClient e)
+        private void ListenClient( TcpClient e, string nameUser)
         {
-            Util.SerializeTypeObject(Util.TypeSoketMessage.ListAvatar,
-                new AvatarUsers(DataClients.Users.Values), e.GetStream());
-  
-            //Util.SerializeObject(new AvatarUsers(DataClients.Users.Keys),e.GetStream() );
+            Util.SerializeTypeObject(Util.TypeSoketMessage.ListMessage, _listMessage, e.GetStream());
+
             while (true)
             {
-                
+               Message mess = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(e)).TObj;
+                Server.Pages.Server.PrintText(mess.Text);
             }
         }
 
-        private void AddClientOnline(TcpClient client)
+        private void AddClientOnline(TcpClient client, string nameUser)
         {
+            _listUserName.Add(nameUser);
             _tcpClientsOnline.Add(client);
             ClientOnlineAdd?.Invoke(null, client);
+            ListenClient(client, nameUser);
         }
 
 
@@ -90,32 +93,22 @@ namespace ChatLAN.Server
                 while (true)
                 {
                     TcpClient tcpClient = _tcpListener.AcceptTcpClient();
-                    TypeMessage<Signature> typeMessage= Util.DeserializeTypeObject<Signature>(Util.ReadAllBytes(tcpClient));
-                    Signature client = typeMessage.TObj;
-                    if (typeMessage.TypeSoketMessage == Util.TypeSoketMessage.SingUp &&
-                        !DataClients.HasItemLogin(client.Login))
-                    {
-                        Util.SerializeTypeObject(Util.TypeSoketMessage.Ok,"Регистрация прошла успешно" ,tcpClient.GetStream());
-                        AddClientOnline(tcpClient);
-                        Server.Pages.Server.PrintText("Зарегистрировался " + client.Login);
-                        DataClients.Users.Add(client.HashPass, new ObjUser(client.HashPass, client.Login));
-                        continue;
-                    }
+                    var client = Util.DeserializeTypeObject<string>(Util.ReadAllBytes(tcpClient));
 
-
-                    if (typeMessage.TypeSoketMessage == Util.TypeSoketMessage.SignIn &&
-                        DataClients.Users.ContainsKey(client.HashPass) &&
-                        DataClients.Users[client.HashPass].login == client.Login)
+                    string userName = client.TObj;
+                    if (client.TypeSoketMessage == Util.TypeSoketMessage.Connect &&
+                        !_listUserName.Contains(userName))
                     {
-                        Util.SerializeTypeObject(Util.TypeSoketMessage.Ok,"Авторизация прошла успешно", tcpClient.GetStream());
-                        Server.Pages.Server.PrintText("Авторизировался " + client.Login);
-                        AddClientOnline(tcpClient);
+                        Util.SerializeTypeObject(Util.TypeSoketMessage.Ok,"Авторизация прошла успешно" ,tcpClient.GetStream());
+                        AddClientOnline(tcpClient, userName);
+                        Pages.Server.PrintText("В чат вошёл " + userName); //IP Adress
+                        //DataClients.Users.Add(userName, new ObjUser(client.HashPass, client.Login));
                         continue;
                     }
 
                     //Thread.Sleep(7420);
 
-                    Server.Pages.Server.PrintText("Что-то пошло не так \n Имя клиента " + client.Login);
+                    Server.Pages.Server.PrintText("Что-то пошло не так \n Имя пользователя " + userName);
                     Util.SerializeTypeObject(Util.TypeSoketMessage.Bad, "Данные отклонены", tcpClient.GetStream());
                 }
             }

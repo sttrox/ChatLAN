@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="ChatLAN.Client.Pages.UserControls.ControlFile"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ChatLAN.Client.Pages.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="150" d:DesignWidth="400"
+             MouseLeftButtonUp="ControlFile_OnMouseLeftButtonUp"
+             PreviewMouseLeftButtonDown="ControlFile_OnPreviewMouseLeftButtonDown"
+             MouseLeave="ControlFile_OnMouseLeave">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition  Width="42"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Column="0" Height="42" Source="../../Data/Image/file.png" />
+        <TextBlock Margin="10,0" Grid.Column="1" VerticalAlignment="Center" Name="TbName" Foreground="Black" Text="Name"></TextBlock>
+    </Grid>
+    <!--<StackPanel Background="#13000000"  Margin="20,0" HorizontalAlignment="Stretch" Orientation="Horizontal">
+                   </StackPanel>-->
+
+</UserControl>

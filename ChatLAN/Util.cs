@@ -65,12 +65,13 @@ namespace ChatLAN
 
         public enum TypeSoketMessage
         {
+            Connect,
             Disconnect,
             SignIn,
             SingUp,
             Ok,
             Bad,
-            ListAvatar
+            ListMessage
         }
 
         public static string ReadString(MemoryStream stream)

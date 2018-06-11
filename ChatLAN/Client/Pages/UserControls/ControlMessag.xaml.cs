@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ChatLAN.Objects;
 
 namespace ChatLAN.Client.Pages.UserControls
 {
@@ -20,13 +21,26 @@ namespace ChatLAN.Client.Pages.UserControls
     /// </summary>
     public partial class ControlMessag : UserControl
     {
-        public string Text
+        private File File
         {
-            set => TextBlock.Text=value;
+            set => ControlFile.FileName = value?.Name;
         }
-        public ControlMessag()
+
+        private string Text
+        {
+            set => TbText.Text=value;
+        }
+        private string Nick
+        {
+            set => TbName.Text=value;
+        }
+
+        public ControlMessag(Message message)
         {
             InitializeComponent();
+            Text = message.Text;
+            Nick = message.Name;
+            File = message.File;
         }
     }
 }

@@ -10,8 +10,9 @@ namespace ChatLAN.Objects
     public static class Const
     {
         
-        public const string ServerPathToAvatarUsers = "/Users/Avatar/";
-        public const string ClientPathToAvatarUsers = "/Client/UsersAvatar/";
+
+        public const string ServerPathToMessage = "/Data/";
+
 
 
     }

@@ -43,28 +43,30 @@
             </StackPanel>
             <TextBlock>Адрес</TextBlock>
             <TextBox
-                Name="TbAdress" >
+                Name="TbAdress">
                 <TextBox.Style>
                     <Style TargetType="TextBox">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}" Value="false">
-                               <Setter Property="Text" Value="127.0.0.1"/>
-                                <Setter Property="IsEnabled" Value="False"/>
-                            </DataTrigger> 
-                            <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}" Value="true">
-                                <Setter Property="Text" Value="127.0.0.1"/>
-                                <Setter Property="IsEnabled" Value="True"/>
+                            <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}"
+                                         Value="false">
+                                <Setter Property="Text" Value="127.0.0.1" />
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=ToggleSwitchButton, Path=IsChecked}"
+                                         Value="true">
+                                <Setter Property="Text" Value="127.0.0.1" />
+                                <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </TextBox.Style>
             </TextBox>
             <TextBlock>Порт</TextBlock>
-            <mah:NumericUpDown 
+            <mah:NumericUpDown
                 Name="NumPort"
                 TextAlignment="Left" Value="8888"
-                               Maximum="65536"
-                               Minimum="80" />
+                Maximum="65536"
+                Minimum="80" />
 
             <TextBlock>Логин</TextBlock>
             <TextBox Name="TbLogin">Login</TextBox>
@@ -100,15 +102,10 @@
                     </Style>
 
                 </Grid.Style>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="42" />
-                    <ColumnDefinition Width="2*" />
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Name="BtnSignIn" Click="BtnSign_OnClick"> Авторизироваться</Button>
-                <Button Grid.Column="2" Name="BtnSignUp" Click="BtnSign_OnClick"> Зарегистрироваться</Button>
+
+                <Button Margin="20,0" Name="BtnSignIn" Click="BtnJoinOnClick"> Авторизироваться</Button>
             </Grid>
-            <mah:ProgressRing Name="ProgressRing" Visibility="Collapsed" Height="42" Width="42"> </mah:ProgressRing>
+            <mah:ProgressRing Name="ProgressRing" Visibility="Collapsed" Height="42" Width="42" />
         </StackPanel>
 
 

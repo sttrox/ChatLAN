@@ -65,11 +65,8 @@
     <Compile Include="Client\Pages\UserControls\ControlBarSendMessage.xaml.cs">
       <DependentUpon>ControlBarSendMessage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Client\Pages\UserControls\ControlChatItem.xaml.cs">
-      <DependentUpon>ControlChatItem.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Client\Pages\UserControls\ControlListChat.xaml.cs">
-      <DependentUpon>ControlListChat.xaml</DependentUpon>
+    <Compile Include="Client\Pages\UserControls\ControlFile.xaml.cs">
+      <DependentUpon>ControlFile.xaml</DependentUpon>
     </Compile>
     <Compile Include="Client\Pages\PageMessager.xaml.cs">
       <DependentUpon>PageMessager.xaml</DependentUpon>
@@ -77,44 +74,34 @@
     <Compile Include="Client\Pages\UserControls\ControlMessag.xaml.cs">
       <DependentUpon>ControlMessag.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Client\Pages\UserControls\ControlMessageaAvatar.xaml.cs">
-      <DependentUpon>ControlMessageaAvatar.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Client\Pages\UserControls\ControlPanelMessage.xaml.cs">
       <DependentUpon>ControlPanelMessage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Objects\AvatarUser.cs" />
-    <Compile Include="Objects\AvatarUsers.cs" />
     <Compile Include="Objects\Const.cs" />
-    <Compile Include="Objects\Signature.cs" />
     <Compile Include="Objects\ObjChat.cs" />
     <Compile Include="Objects\TypeMessage.cs" />
     <Compile Include="Server\ServerCore.cs" />
     <Compile Include="Server\Utils\ClientObject.cs" />
-    <Compile Include="Server\Utils\DataClients.cs" />
     <Compile Include="Objects\File.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Objects\ObjUser.cs" />
     <Compile Include="ServerObject.cs" />
     <Compile Include="Client\ClientCore.cs" />
+    <Compile Include="Server\Utils\Serializer.cs" />
     <Compile Include="Util.cs" />
     <Page Include="Client\Pages\UserControls\ControlBarSendMessage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Client\Pages\UserControls\ControlChatItem.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Client\Pages\PageMessager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Client\Pages\UserControls\ControlMessag.xaml">
+    <Page Include="Client\Pages\UserControls\ControlFile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Client\Pages\UserControls\ControlMessageaAvatar.xaml">
+    <Page Include="Client\Pages\UserControls\ControlMessag.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -134,10 +121,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Client\Pages\UserControls\ControlListChat.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="PageMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -194,6 +177,20 @@
     <Resource Include="Client\Data\Image\B6pW1T4c8MQ.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Client\Data\Image\inset-wh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Client\Data\Image\sent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Client\Data\Image\smile.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Client\Data\Image\file.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

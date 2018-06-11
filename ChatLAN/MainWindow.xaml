@@ -2,14 +2,17 @@
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 
-                 Title="MainWindow"
+                 Title="ChatLAN"
                  Height="350"
                  Width="525"
 
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
-
-
+    <!--<mah:MetroWindow.RightWindowCommands >
+        <mah:WindowCommands>
+            <TextBox Margin="30,0,30,0" Background="Transparent" BorderBrush="Transparent" FontSize="16" Foreground="White" Text="Вы вошли как"></TextBox>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>-->
     <Frame Name="Frame" x:FieldModifier="private" NavigationUIVisibility="Hidden" Source="PageMain.xaml" />
 
 

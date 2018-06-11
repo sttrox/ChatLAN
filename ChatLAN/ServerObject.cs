@@ -56,7 +56,7 @@ namespace ChatLAN
         //    {
         //        //todo порт занят 
         //        tcpListener = new TcpListener(IPAddress.Any, 8888);
-        //        tcpListener.Start();
+        //        tcpListener.JoinServer();
         //        Server.Pages.Server.PrintText("Сервер запущен. Ожидание подключений...");
         //        while (true)
         //        {

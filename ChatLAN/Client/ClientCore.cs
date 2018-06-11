@@ -10,9 +10,13 @@ namespace ChatLAN.Client
 {
     public class ClientCore
     {
+        public event EventHandler Join;
         public event EventHandler<Message> ChatAdd;
-        public static event EventHandler<Dictionary<string, Message>> RefreshListChat; 
+        public event EventHandler<Message> AddMessage; 
+
+        public static event EventHandler<Dictionary<string, Message>> RefreshListChat;
         private event EventHandler<ChatMessage> AcceptMessage;
+        private List<Message> _listMessage;
 
         public static Dictionary<string, Message> Chats = new Dictionary<string, Message>();
         public static List<string> ListAllUsers = new List<string>();
@@ -22,22 +26,10 @@ namespace ChatLAN.Client
         private static ClientCore _client;
         private readonly TcpClient _tcpClient;
 
-       
-
         private ClientCore(byte[] ipAdress, int port)
         {
             AcceptMessage += OnAcceptMessage;
-            Chats.Add("Azzara",
-                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
-            Chats.Add("Pato",
-                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
-            Chats.Add("Lain",
-                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
-            Chats.Add("AntiLoop",
-                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
-            Chats.Add("Withay",
-                new Message() {Data = "3 Января", Name = "Azzara", Text = "Этелон килограмма равен 5и"});
-            RefreshListChat?.Invoke(null,ListAllChatMessage);
+            RefreshListChat?.Invoke(null, ListAllChatMessage);
             try
             {
                 _tcpClient = new TcpClient();
@@ -73,90 +65,47 @@ namespace ChatLAN.Client
 
         public static ClientCore InicializeClient(byte[] ipAdress, int port)
         {
-            if (_client == null)
-                _client = new ClientCore(ipAdress, port);
-
+            if (_client == null) _client = new ClientCore(ipAdress, port);
             return _client;
         }
 
-        public NetworkStream GetNetworkStream() => _tcpClient.GetStream();
-
-
-        public class Auth
+        public static ClientCore GetCore()
         {
-            public event EventHandler<string> Error;
-            public event EventHandler<string> Join;
-
-            public void SingIn(byte[] ipAdress, int port, string login, string pass)
-            {
-                ClientCore client = InicializeClient(ipAdress, port);
-
-                new Thread(() =>
-                {
-                    bool badRequest = false;
-
-                    Util.UnhandledException += (o, args) =>
-                        badRequest = true;
-
-                    if (client.Sign(client.GetNetworkStream(),
-                        new Signature(login, Util.GetMD5(pass)), Util.TypeSoketMessage.SignIn))
-                    {
-                        Join?.Invoke(null, "Всё хорошо");
-                        ClientCore.InicializeClient(ipAdress, port).ReceiveMessage();
-                        // FrameStatic.Frame.Invoke(() => FrameStatic.Frame.NavigationService.Navigate(new PageMessager()));
-                        return;
-                    }
-
-
-                    if (badRequest)
-                    {
-                        Error?.Invoke(null, "Сервер ответил не верно");
-                        return;
-                    }
-
-                    Error?.Invoke(null, "Неправильное имя пользователя или пароль. Проверьте введённые данные");
-                }).Start();
-            }
-
-            public void SingOut(byte[] ipAdress, int port, string login, string pass)
-            {
-                throw new NotImplementedException();
-            }
+            if (_client == null) throw new NullReferenceException("Внача необходимо инициализировать клиент");
+            return _client;
         }
 
-
-        public void AddChat(string login, Message message)
+        public void JoinServer(string login)
         {
-            Chats.Add(login, message);
-            ChatAdd?.Invoke(null, message);
-        }
-
-
-        public bool Sign(NetworkStream stream, Signature clien, Util.TypeSoketMessage typeSoketMessage)
-        {
-            Util.SerializeTypeObject(typeSoketMessage, clien, stream);
+            Util.SerializeTypeObject(Util.TypeSoketMessage.Connect, login, _tcpClient.GetStream());
             if (Util.TypeSoketMessage.Ok ==
                 Util.DeserializeTypeObject<string>(Util.ReadAllBytes(_tcpClient))
                     .TypeSoketMessage)
-                return true;
-            return false;
+                Join?.Invoke(null, null);
+            else
+                Error?.Invoke(null, "Не удалось подключиться");
+        }
+
+        public void SendMessage(string text)
+        {
+            jj
         }
 
         public void ReceiveMessage()
         {
-            var p = Util.DeserializeTypeObject<AvatarUsers>(Util.ReadAllBytes(_tcpClient));
-            foreach (AvatarUser avatarUser in p.TObj.ListAvatarUsers)
+            _listMessage = Util.DeserializeTypeObject<List<Message>>(Util.ReadAllBytes(_tcpClient)).TObj;
+            foreach (var message in _listMessage)
             {
-                //todo лишнее хранить все аватары в памяти
-                ListAllUsers.Add(avatarUser.Name);
+                AddMessage?.Invoke(null, message);
             }
+
             //while (true)
             //{
             //    try
             //    {
             //        //MessageFromServer messageFromServer =
             //        //    Util.DeserializeObject<MessageFromServer>(Util.ReadAllBytes(_tcpClient));
-     //                   AcceptMessage?.Invoke(null, new ChatMessage(null,null));
+            //                   AcceptMessage?.Invoke(null, new ChatMessage(null,null));
             //        // messageFromServer
 
             //        //byte[] data = new byte[64]; // буфер для получаемых данных
@@ -188,17 +137,17 @@ namespace ChatLAN.Client
             _client._tcpClient?.Close(); //отключение клиента
             Environment.Exit(0); //завершение процесса
         }
+    }
 
-       
-    } internal class ChatMessage
+    internal class ChatMessage
+    {
+        public string Login;
+        public Message Message;
+
+        public ChatMessage(string login, Message message)
         {
-            public string Login;
-            public Message Message;
-
-            public ChatMessage(string login, Message message)
-            {
-                Login = login;
-                Message = message;
-            }
+            Login = login;
+            Message = message;
         }
+    }
 }

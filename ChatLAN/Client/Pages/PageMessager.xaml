@@ -4,32 +4,17 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:ChatLAN.Client.Pages"
-      xmlns:userControls="clr-namespace:ChatLAN.Client.Pages.Messager.UserControls"
       xmlns:userControls1="clr-namespace:ChatLAN.Client.Pages.UserControls"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="PageMessager">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="33*" />
-            <ColumnDefinition Width="100*" />
-        </Grid.ColumnDefinitions>
-        <userControls:ControlListChat  Background="#33333333" VerticalContentAlignment="Top" x:Name="ListChat">
-            <!--<StackPanel>
-                <userControls:ControlChatItem Login="Беседа" Text="Последнее сообщение" UriImage="Image/B6pW1T4c8MQ.jp" />
-                <userControls:ControlChatItem Login="Azzar" Text="Последнее сообщение" BackgroundRound="37 ,191,81 "
-                                              UriImage="Image/B6pW1T4c8MQ.jp" />
-                <userControls:ControlChatItem Login="Lain" Text="Последнее сообщение" BackgroundRound="255,127,80  "
-                                              UriImage="Image/B6pW1T4c8MQ.jp" />
-                <userControls:ControlChatItem Login="Clemente" Text="Последнее сообщение" BackgroundRound="60 ,179,113"
-                                              UriImage="Image/B6pW1T4c8MQ.jp" />
-            </StackPanel>-->
-        </userControls:ControlListChat>
-        <StackPanel Grid.Column="1">
-<userControls1:ControlMessag Width="400" HorizontalAlignment="Left" Height="Auto"   Text="fgffgf"></userControls1:ControlMessag>
-<userControls1:ControlMessageaAvatar Width="400" HorizontalAlignment="Left" Height="Auto"  Text="fgffgf"></userControls1:ControlMessageaAvatar>
-        </StackPanel>
-        <userControls1:ControlBarSendMessage Grid.Column="1" Background="AntiqueWhite" VerticalAlignment="Bottom"></userControls1:ControlBarSendMessage>
 
-            </Grid>
+        <StackPanel Name="PanelMessage">
+            <!--<userControls1:ControlMessag Width="400" HorizontalAlignment="Left" Height="Auto" Foreground="AntiqueWhite"
+                                         Text="" />-->
+        </StackPanel>
+        <userControls1:ControlBarSendMessage VerticalAlignment="Bottom" />
+
+    </Grid>
 </Page>

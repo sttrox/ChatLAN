@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using ChatLAN.Client;
+using ChatLAN.Client.Pages;
 using ChatLAN.Objects;
 using ChatLAN.Server;
 using ChatLAN.Server.Utils;
@@ -20,32 +21,28 @@ namespace ChatLAN
         public PageMain()
         {
             InitializeComponent();
-            DataClients.Users.Add("81DC9BDB52D04DC20036DBD8313ED055", new ObjUser()
-            {
-                login = "Login",
-                passHash = "81DC9BDB52D04DC20036DBD8313ED055"
-            });
         }
 
-        private void BtnSign_OnClick(object sender, RoutedEventArgs e)
+        private void BtnJoinOnClick(object sender, RoutedEventArgs e)
         {
             PanelOfClient.Visibility = Visibility.Collapsed;
             ProgressRing.Visibility = Visibility.Visible;
 
             if (!ValidationAdress(TbAdress.Text))
             {
-                PrintAndReturnButton("Ошибка", "Не верный ip адрес");
+                PrintAndReturnButton("Ошибка", "Неверный IP адрес");
                 return;
             }
 
-            ClientCore.Auth auth = new ClientCore.Auth();
-            auth.Error += (o, s) => PrintAndReturnButton("Ошибка", s); //todo remove method
-            //auth.Error -= (o, s) => PrintAndReturnButton("Ошибка", s);
-            auth.Join += (o, s) =>
-                MainWindow.OpenPage("Client/Pages/PageMessager.xaml");
-            //PrintAndReturnButton("Juicy", "Auth OK");
-            auth.SingIn(getIpAdress(TbAdress.Text), (int) NumPort.Value, TbLogin.Text, TbPass.Text);
+            ClientCore client = ClientCore.InicializeClient(getIpAdress(TbAdress.Text), (int) NumPort.Value);
+
+            client.Error += MessageOnError; //todo remove method
+            client.Join += OpenPageServer;
+            client.JoinServer(TbLogin.Text);
+
         }
+
+       
 
         private void BtnStart_OnClick(object sender, RoutedEventArgs e)
         {
@@ -57,15 +54,7 @@ namespace ChatLAN
             server.Start();
         }
 
-        private void OpenPageServer(object sender, TcpListener e)
-        {
-            MainWindow.OpenPage(new Server.Pages.Server());
-        }
-
-        private void MessageOnError(object sender, string e)
-        {
-            MainWindow.ShowMessage("Ошибка", e);
-        }
+       
 
         private bool ValidationAdress(string text)
         {
@@ -106,6 +95,20 @@ namespace ChatLAN
                 ProgressRing.Visibility = Visibility.Collapsed;
                 PanelOfClient.Visibility = Visibility.Visible;
             }, DispatcherPriority.Normal);
+        }
+
+        private void OpenPageServer(object sender, EventArgs e)
+        {
+            MainWindow.OpenPage(new PageMessager());
+        }
+        private void OpenPageServer(object sender, TcpListener e)
+        {
+            MainWindow.OpenPage(new Server.Pages.Server());
+        }
+
+        private void MessageOnError(object sender, string e)
+        {
+            MainWindow.ShowMessage("Ошибка", e);
         }
     }
 }

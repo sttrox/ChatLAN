@@ -4,10 +4,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:ChatLAN.Client.Pages.UserControls"
-    xmlns:UserControls="clr-namespace:ChatLAN.Client.Pages.Messager.UserControls"
     x:Class="ChatLAN.Client.Pages.UserControls.ControlMessag"
     mc:Ignorable="d"
-    d:DesignHeight="50" d:DesignWidth="400">
+    Name="UserControl3"
+    d:DesignHeight="100" d:DesignWidth="400" Foreground="Beige">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
@@ -19,21 +19,22 @@
             <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Column="1" Grid.ColumnSpan="2" Background="MediumSeaGreen" CornerRadius="12" Grid.RowSpan="2">
+        <Border Grid.Column="1" Grid.ColumnSpan="2" Background="{Binding ElementName=UserControl3, Path=Foreground}" CornerRadius="12" Grid.RowSpan="2">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="24*"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock TextWrapping="Wrap" Margin="20,17,0,14.762" HorizontalAlignment="Left" VerticalAlignment="Center"
-                           Name="TextBlock">
-                    fgfg fdsffds
-                    g
+                <local:ControlFile x:Name="ControlFile" Grid.Row="1" Visibility="Collapsed"></local:ControlFile>
+                <TextBlock Grid.Row="0" Foreground="Black" Margin="20,0" Text="Name" Name="TbName"></TextBlock>
+                <TextBlock Grid.Row="2" FontSize="16" Foreground="Black" TextWrapping="Wrap" Background="Transparent"  Margin="20,0" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                         Text="Text"  Name="TbText">
                 </TextBlock>
             </Grid>
         </Border>
-        <Path Panel.ZIndex="-9" Grid.Column="0" Grid.Row="1" Data="M20,0 L0,20 L20,20 " Fill="MediumSeaGreen"
-              Stretch="Fill" Stroke="MediumSeaGreen"
+        <Path Panel.ZIndex="-9" Grid.Column="0" Grid.Row="1" Data="M20,0 L0,20 L20,20 " Fill="{Binding ElementName=UserControl3, Path=Foreground}"
+              Stretch="Fill" Stroke="{Binding ElementName=UserControl3, Path=Foreground}"
               Grid.ColumnSpan="2"
               HorizontalAlignment="Left"
               VerticalAlignment="Bottom" />
