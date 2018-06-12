@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Windows;
 using ChatLAN.Objects;
 
 namespace ChatLAN.Client
@@ -12,7 +13,7 @@ namespace ChatLAN.Client
     {
         public event EventHandler Join;
         public event EventHandler<Message> ChatAdd;
-        public event EventHandler<Message> AddMessage; 
+        public event EventHandler<Message> AddMessage;
 
         public static event EventHandler<Dictionary<string, Message>> RefreshListChat;
         private event EventHandler<ChatMessage> AcceptMessage;
@@ -71,24 +72,26 @@ namespace ChatLAN.Client
 
         public static ClientCore GetCore()
         {
-            if (_client == null) throw new NullReferenceException("Внача необходимо инициализировать клиент");
+            if (_client == null) throw new NullReferenceException("Необходимо инициализировать клиент");
             return _client;
         }
 
         public void JoinServer(string login)
         {
             Util.SerializeTypeObject(Util.TypeSoketMessage.Connect, login, _tcpClient.GetStream());
+            byte[] b = Util.ReadAllBytes(_tcpClient);
+            var k = Util.DeserializeTypeObject<string>(b);
             if (Util.TypeSoketMessage.Ok ==
-                Util.DeserializeTypeObject<string>(Util.ReadAllBytes(_tcpClient))
+                k
                     .TypeSoketMessage)
                 Join?.Invoke(null, null);
             else
                 Error?.Invoke(null, "Не удалось подключиться");
         }
 
-        public void SendMessage(string text)
+        public static void SendMessage(Message message)
         {
-            jj
+            Util.SerializeTypeObject(Util.TypeSoketMessage.Message, message, _client._tcpClient.GetStream());
         }
 
         public void ReceiveMessage()

@@ -3,24 +3,27 @@ using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows;
 using System.Xml.Serialization;
 using ChatLAN.Objects;
+using Encoder = System.Drawing.Imaging.Encoder;
+using File = System.IO.File;
 
 namespace ChatLAN
 {
     public static class Util
     {
         public static event UnhandledExceptionEventHandler UnhandledException;
+        public static event EventHandler<string> Error;
 
         private static void SerializeObject<TObject>(TObject objSerializ, NetworkStream stream)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(TObject));
             serializer.Serialize(stream, objSerializ);
-            using (StreamWriter memoryStream = new StreamWriter($"{Environment.CurrentDirectory}/log.xml",true))
+            using (StreamWriter memoryStream = new StreamWriter($"{Environment.CurrentDirectory}/log.xml", true))
             {
                 serializer.Serialize(memoryStream, objSerializ);
             }
-
         }
 
         public static void SerializeTypeObject<TObject>(Util.TypeSoketMessage message, TObject objSerializ,
@@ -41,10 +44,12 @@ namespace ChatLAN
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(TObject));
                 using (MemoryStream memory = new MemoryStream(bytes))
+                
                     temp = (TObject) serializer.Deserialize(memory);
             }
             catch (InvalidOperationException e)
             {
+                MessageBox.Show(Encoding.UTF8.GetString(bytes));
                 UnhandledException?.Invoke(null, new UnhandledExceptionEventArgs(e, false));
             }
 
@@ -65,10 +70,9 @@ namespace ChatLAN
 
         public enum TypeSoketMessage
         {
+            Message,
             Connect,
             Disconnect,
-            SignIn,
-            SingUp,
             Ok,
             Bad,
             ListMessage
@@ -81,6 +85,7 @@ namespace ChatLAN
             {
                 return streamReader.ReadToEnd();
             }
+
             byte[] data = new byte[8192]; // буфер для получаемых данных
             StringBuilder builder = new StringBuilder();
             int bufferSize = 0;
@@ -121,5 +126,17 @@ namespace ChatLAN
 
         public static byte[] ReadAllBytes(TcpClient tcpClient)
             => ReadAllByte(tcpClient).ToArray();
+
+        public static byte[] ReadAllBytes(string pathToFile)
+        {
+            if (File.Exists(pathToFile))
+                using (FileStream stream = new FileStream(pathToFile, FileMode.Open))
+                {
+                    return ReadAllByte(stream);
+                }
+
+            Error?.Invoke(null, $"Файл {pathToFile} не найден ");
+            return null;
+        }
     }
 }

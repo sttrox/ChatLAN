@@ -36,7 +36,9 @@ namespace ChatLAN
 
             ClientCore client = ClientCore.InicializeClient(getIpAdress(TbAdress.Text), (int) NumPort.Value);
 
+            client.Error -= MessageOnError; //todo remove method
             client.Error += MessageOnError; //todo remove method
+            client.Join -= OpenPageServer;
             client.Join += OpenPageServer;
             client.JoinServer(TbLogin.Text);
 
@@ -109,6 +111,11 @@ namespace ChatLAN
         private void MessageOnError(object sender, string e)
         {
             MainWindow.ShowMessage("Ошибка", e);
+            this.Dispatcher.Invoke(() =>
+            {
+                ProgressRing.Visibility = Visibility.Collapsed;
+                PanelOfClient.Visibility = Visibility.Visible;
+            }, DispatcherPriority.Normal);
         }
     }
 }

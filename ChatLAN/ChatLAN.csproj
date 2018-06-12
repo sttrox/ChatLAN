@@ -129,9 +129,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Client\Styles\Scroll.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Styles\Scroll.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

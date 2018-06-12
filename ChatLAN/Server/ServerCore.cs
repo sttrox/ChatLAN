@@ -16,11 +16,11 @@ namespace ChatLAN.Server
         public event EventHandler<TcpListener> ServerStart;
         public event EventHandler<String> Error;
 
-        private List<string> _listUserName= new List<string>();
+        private List<string> _listUserName = new List<string>();
         private readonly List<Message> _listMessage;
         private event EventHandler<TcpClient> ClientOnlineAdd;
-        private  TcpListener _tcpListener;
-        private  List<TcpClient> _tcpClientsOnline = new List<TcpClient>();
+        private TcpListener _tcpListener;
+        private List<TcpClient> _tcpClientsOnline = new List<TcpClient>();
         private static ServerCore _serverCore;
 
         public void RemoveServer()
@@ -62,15 +62,43 @@ namespace ChatLAN.Server
         }
 
         //todo
-        private void ListenClient( TcpClient e, string nameUser)
+        private void ListenClient(TcpClient e, string nameUser)
         {
-            Util.SerializeTypeObject(Util.TypeSoketMessage.ListMessage, _listMessage, e.GetStream());
-
-            while (true)
+            new Thread(() =>
             {
-               Message mess = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(e)).TObj;
-                Server.Pages.Server.PrintText(mess.Text);
+                Thread.Sleep(500);
+            Util.SerializeTypeObject(Util.TypeSoketMessage.ListMessage, _listMessage, e.GetStream());
+           
+                while (true)
+                {
+                    Message mess = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(e)).TObj;
+                    Server.Pages.Server.PrintText(mess.Text);
+                }
+            }).Start();
+        }
+
+        private void AddBadClient(TcpClient client)
+        {
+            new Thread(() =>
+            {
+                while (true)
+                    if (ValidationUserName(client))
+                        break;
+            }).Start();
+        }
+
+        private bool ValidationUserName(TcpClient tcpClient)
+        {
+            var client = Util.DeserializeTypeObject<string>(Util.ReadAllBytes(tcpClient));
+            if (client.TypeSoketMessage == Util.TypeSoketMessage.Connect && !_listUserName.Contains(client.TObj))
+            {
+                Util.SerializeTypeObject(Util.TypeSoketMessage.Ok, "Авторизация прошла успешно", tcpClient.GetStream());
+                AddClientOnline(tcpClient, client.TObj);
+                Pages.Server.PrintText("В чат вошёл " + client.TObj); //IP Adress
+                return true;
             }
+
+            return false;
         }
 
         private void AddClientOnline(TcpClient client, string nameUser)
@@ -87,28 +115,27 @@ namespace ChatLAN.Server
         {
             try
             {
-                //todo порт занят 
-
                 Server.Pages.Server.PrintText("Сервер запущен. Ожидание подключений...");
                 while (true)
                 {
                     TcpClient tcpClient = _tcpListener.AcceptTcpClient();
-                    var client = Util.DeserializeTypeObject<string>(Util.ReadAllBytes(tcpClient));
-
-                    string userName = client.TObj;
-                    if (client.TypeSoketMessage == Util.TypeSoketMessage.Connect &&
-                        !_listUserName.Contains(userName))
-                    {
-                        Util.SerializeTypeObject(Util.TypeSoketMessage.Ok,"Авторизация прошла успешно" ,tcpClient.GetStream());
-                        AddClientOnline(tcpClient, userName);
-                        Pages.Server.PrintText("В чат вошёл " + userName); //IP Adress
-                        //DataClients.Users.Add(userName, new ObjUser(client.HashPass, client.Login));
-                        continue;
-                    }
+                    //var client = Util.DeserializeTypeObject<string>(Util.ReadAllBytes(tcpClient));
+                    if (ValidationUserName(tcpClient)) continue;
+                    //string userName = client.TObj;
+                    //if (client.TypeSoketMessage == Util.TypeSoketMessage.Connect &&
+                    //    !_listUserName.Contains(userName))
+                    //{
+                    //    Util.SerializeTypeObject(Util.TypeSoketMessage.Ok, "Авторизация прошла успешно",
+                    //        tcpClient.GetStream());
+                    //    AddClientOnline(tcpClient, userName);
+                    //    Pages.Server.PrintText("В чат вошёл " + userName); //IP Adress
+                    //    //DataClients.Users.Add(userName, new ObjUser(client.HashPass, client.Login));
+                    //    continue;
+                    //}
 
                     //Thread.Sleep(7420);
-
-                    Server.Pages.Server.PrintText("Что-то пошло не так \n Имя пользователя " + userName);
+                    AddBadClient(tcpClient);
+                    Server.Pages.Server.PrintText("Что-то пошло не так " );
                     Util.SerializeTypeObject(Util.TypeSoketMessage.Bad, "Данные отклонены", tcpClient.GetStream());
                 }
             }

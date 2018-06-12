@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace ChatLAN.Objects
 {
@@ -10,5 +11,10 @@ namespace ChatLAN.Objects
 
         [XmlIgnore]
         public File File;
+
+        public Message()
+        {
+            File = new File();
+        }
     }
 }
