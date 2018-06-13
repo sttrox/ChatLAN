@@ -23,16 +23,22 @@ namespace ChatLAN.Client.Pages.UserControls
     {
         private File File
         {
-            set => ControlFile.FileName = value?.Name;
+            set
+            {
+                if (value.Data == null) return;
+                ControlFile.Visibility = Visibility;
+                ControlFile.FileName = value?.Name;
+            }
         }
 
         private string Text
         {
-            set => TbText.Text=value;
+            set => TbText.Text = value;
         }
+
         private string Nick
         {
-            set => TbName.Text=value;
+            set => TbName.Text = value;
         }
 
         public ControlMessag(Message message)

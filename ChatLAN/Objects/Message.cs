@@ -8,8 +8,6 @@ namespace ChatLAN.Objects
         public string Data;
         public string Text;
         public string Name;
-
-        [XmlIgnore]
         public File File;
 
         public Message()

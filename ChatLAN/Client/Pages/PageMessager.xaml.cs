@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ChatLAN.Client.Pages.UserControls;
+using MahApps.Metro.Controls;
 
 namespace ChatLAN.Client.Pages
 {
@@ -26,7 +27,10 @@ namespace ChatLAN.Client.Pages
         {
             InitializeComponent();
             ClientCore clientCore = ClientCore.GetCore();
-            clientCore.AddMessage += (sender, message) => PanelMessage.Children.Add(new ControlMessag(message));
+            clientCore.AddMessage += (sender, message) =>
+                PanelMessage.Invoke(() => { PanelMessage.Children.Add(new ControlMessag(message)
+                    { Margin = new Thickness(5), Foreground = Brushes.LightBlue}); });
+
             new Thread(() => clientCore.ReceiveMessage()).Start();
         }
     }

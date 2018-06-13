@@ -15,6 +15,8 @@ namespace ChatLAN.Client
         public event EventHandler<Message> ChatAdd;
         public event EventHandler<Message> AddMessage;
 
+
+        public static string _nameUser;
         public static event EventHandler<Dictionary<string, Message>> RefreshListChat;
         private event EventHandler<ChatMessage> AcceptMessage;
         private List<Message> _listMessage;
@@ -83,8 +85,10 @@ namespace ChatLAN.Client
             var k = Util.DeserializeTypeObject<string>(b);
             if (Util.TypeSoketMessage.Ok ==
                 k
-                    .TypeSoketMessage)
+                    .TypeSoketMessage) {
                 Join?.Invoke(null, null);
+                _nameUser = login;
+            }
             else
                 Error?.Invoke(null, "Не удалось подключиться");
         }
@@ -102,37 +106,14 @@ namespace ChatLAN.Client
                 AddMessage?.Invoke(null, message);
             }
 
-            //while (true)
-            //{
-            //    try
-            //    {
-            //        //MessageFromServer messageFromServer =
-            //        //    Util.DeserializeObject<MessageFromServer>(Util.ReadAllBytes(_tcpClient));
-            //                   AcceptMessage?.Invoke(null, new ChatMessage(null,null));
-            //        // messageFromServer
-
-            //        //byte[] data = new byte[64]; // буфер для получаемых данных
-            //        //StringBuilder builder = new StringBuilder();
-            //        //int bytes = 0;
-            //        //do
-            //        //{
-            //        //    bytes = stream.Read(data, 0, data.Length);
-            //        //    builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-            //        //} while (stream.DataAvailable);
-
-            //        //string message = builder.ToString();
-            //        //MessageBox.Show(message);
-
-            //        //Console.WriteLine(message); //вывод сообщения
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine(ex.Message);
-            //        Console.WriteLine("Подключение прервано!"); //соединение было прервано
-            //        Console.ReadLine();
-            //        // Disconnect();
-            //    }
-            //}
+            while (true)
+            {
+                var message = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(_tcpClient));
+                if (message.TypeSoketMessage == Util.TypeSoketMessage.Message)
+                {
+                    AddMessage?.Invoke(null,message.TObj);
+                }
+            }
         }
 
         static void Disconnect()

@@ -20,26 +20,15 @@
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Rectangle Panel.ZIndex="-99" Fill="White" Grid.ColumnSpan="9"></Rectangle>
-        <Button Grid.Column="0"  VerticalAlignment="Bottom" Height="42" Click="OpenFile">
+        <Button Name="BtnOpenFile" Grid.Column="0"  VerticalAlignment="Bottom" Height="42" Click="OpenFile">
             <Image Source="../../Data/Image/inset.png" />
-            <!--<Button.Background>
-                <ImageBrush ImageSource="Data/Image/inset.png" Stretch="Uniform"></ImageBrush>
-            </Button.Background>-->
         </Button>
         <TextBox Name="TbText" BorderThickness="0" Background="White" Grid.Column="1" AcceptsReturn="True"  TextChanged="TextBoxBase_OnTextChanged"/>
         <Button VerticalAlignment="Bottom" Grid.Column="3" Height="42" Click="SendMessage">
             <Image Height="42" Source="../../Data/Image/sent.png" />
-            
-            <!--<Button.Background>
-                --><!--<ImageBrush ImageSource="Data/Image/sent.png" Stretch="Uniform"></ImageBrush>--><!--
-            </Button.Background>-->
         </Button>
         <Button VerticalAlignment="Bottom" Grid.Column="2" Height="42">
             <Image Height="42" Source="../../Data/Image/smile.png" />
-            <!--<Button.Background>
-                <ImageBrush ImageSource="Data/Image/smile.png" Stretch="Uniform">
-                </ImageBrush>
-            </Button.Background>-->
         </Button>
     </Grid>
 </UserControl>

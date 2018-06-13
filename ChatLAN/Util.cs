@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Xml.Serialization;
 using ChatLAN.Objects;
@@ -29,11 +30,15 @@ namespace ChatLAN
         public static void SerializeTypeObject<TObject>(Util.TypeSoketMessage message, TObject objSerializ,
             NetworkStream stream)
         {
-            SerializeObject(new TypeMessage<TObject>(objSerializ, message), stream);
+            
+            SerializeObject(new TypeMessage<TObject>(objSerializ, message), stream); 
+            Thread.Sleep(50);
+         
         }
 
         public static TypeMessage<TObject> DeserializeTypeObject<TObject>(byte[] bytes)
         {
+            Thread.Sleep(50);
             return DeserializeObject<TypeMessage<TObject>>(bytes);
         }
 
@@ -44,7 +49,7 @@ namespace ChatLAN
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(TObject));
                 using (MemoryStream memory = new MemoryStream(bytes))
-                
+
                     temp = (TObject) serializer.Deserialize(memory);
             }
             catch (InvalidOperationException e)

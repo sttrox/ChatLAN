@@ -15,13 +15,15 @@ namespace ChatLAN.Server
     {
         public event EventHandler<TcpListener> ServerStart;
         public event EventHandler<String> Error;
+        public event EventHandler<Message> MessageReceived;
 
         private List<string> _listUserName = new List<string>();
         private readonly List<Message> _listMessage;
         private event EventHandler<TcpClient> ClientOnlineAdd;
         private TcpListener _tcpListener;
-        private List<TcpClient> _tcpClientsOnline = new List<TcpClient>();
+        private Dictionary<string, TcpClient> _tcpClientsOnline = new Dictionary<string, TcpClient>();
         private static ServerCore _serverCore;
+
 
         public void RemoveServer()
         {
@@ -51,6 +53,7 @@ namespace ChatLAN.Server
             _tcpListener = new TcpListener(IPAddress.Any, port);
             MainWindow.Close += (sender, args) => Disconnect();
 
+            //загрузка из памяти сообщений
             _listMessage = Serializer.DeserializeMessage();
         }
 
@@ -61,18 +64,34 @@ namespace ChatLAN.Server
             return _serverCore;
         }
 
+        private void SendingMessages(Message message, string nameUser)
+        {
+            foreach (var client in _tcpClientsOnline)
+                if (client.Key != nameUser)
+                    Util.SerializeTypeObject(Util.TypeSoketMessage.Message, message, client.Value.GetStream());
+        }
+
+        private void ReceivedMessage(Message message, string nameUser)
+        {
+            MessageReceived?.Invoke(null, message);
+            _listMessage.Add(message);
+            SendingMessages(message, nameUser);
+        }
+
         //todo
         private void ListenClient(TcpClient e, string nameUser)
         {
             new Thread(() =>
             {
                 Thread.Sleep(500);
-            Util.SerializeTypeObject(Util.TypeSoketMessage.ListMessage, _listMessage, e.GetStream());
-           
+                Util.SerializeTypeObject(Util.TypeSoketMessage.ListMessage, _listMessage, e.GetStream());
+
                 while (true)
                 {
-                    Message mess = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(e)).TObj;
-                    Server.Pages.Server.PrintText(mess.Text);
+                    var message = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(e));
+                    Server.Pages.Server.PrintText(message.TObj.Text);
+                    if (message.TypeSoketMessage == Util.TypeSoketMessage.Message)
+                        ReceivedMessage(message.TObj, nameUser);
                 }
             }).Start();
         }
@@ -104,7 +123,7 @@ namespace ChatLAN.Server
         private void AddClientOnline(TcpClient client, string nameUser)
         {
             _listUserName.Add(nameUser);
-            _tcpClientsOnline.Add(client);
+            _tcpClientsOnline.Add(nameUser, client);
             ClientOnlineAdd?.Invoke(null, client);
             ListenClient(client, nameUser);
         }
@@ -119,23 +138,10 @@ namespace ChatLAN.Server
                 while (true)
                 {
                     TcpClient tcpClient = _tcpListener.AcceptTcpClient();
-                    //var client = Util.DeserializeTypeObject<string>(Util.ReadAllBytes(tcpClient));
                     if (ValidationUserName(tcpClient)) continue;
-                    //string userName = client.TObj;
-                    //if (client.TypeSoketMessage == Util.TypeSoketMessage.Connect &&
-                    //    !_listUserName.Contains(userName))
-                    //{
-                    //    Util.SerializeTypeObject(Util.TypeSoketMessage.Ok, "Авторизация прошла успешно",
-                    //        tcpClient.GetStream());
-                    //    AddClientOnline(tcpClient, userName);
-                    //    Pages.Server.PrintText("В чат вошёл " + userName); //IP Adress
-                    //    //DataClients.Users.Add(userName, new ObjUser(client.HashPass, client.Login));
-                    //    continue;
-                    //}
 
-                    //Thread.Sleep(7420);
                     AddBadClient(tcpClient);
-                    Server.Pages.Server.PrintText("Что-то пошло не так " );
+                    Server.Pages.Server.PrintText("Что-то пошло не так ");
                     Util.SerializeTypeObject(Util.TypeSoketMessage.Bad, "Данные отклонены", tcpClient.GetStream());
                 }
             }
@@ -151,7 +157,7 @@ namespace ChatLAN.Server
             _tcpListener.Stop(); //остановка сервера
 
             foreach (var client in _tcpClientsOnline)
-                client.Close();
+                client.Value.Close();
 
             Environment.Exit(0); //завершение процесса
         }
