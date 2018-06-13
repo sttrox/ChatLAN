@@ -15,7 +15,7 @@ namespace ChatLAN.Client
         public event EventHandler<Message> ChatAdd;
         public event EventHandler<Message> AddMessage;
 
-
+        private static HashAdpess _hashAdress;
         public static string _nameUser;
         public static event EventHandler<Dictionary<string, Message>> RefreshListChat;
         private event EventHandler<ChatMessage> AcceptMessage;
@@ -33,6 +33,7 @@ namespace ChatLAN.Client
         {
             AcceptMessage += OnAcceptMessage;
             RefreshListChat?.Invoke(null, ListAllChatMessage);
+            _hashAdress = new HashAdpess(ipAdress,port);
             try
             {
                 _tcpClient = new TcpClient();
@@ -68,8 +69,15 @@ namespace ChatLAN.Client
 
         public static ClientCore InicializeClient(byte[] ipAdress, int port)
         {
-            if (_client == null) _client = new ClientCore(ipAdress, port);
-            return _client;
+            if (_client == null) return _client = new ClientCore(ipAdress, port);
+            if (_hashAdress.Equals(ipAdress,port))
+            {
+                _client._tcpClient.Close();
+                _client = new ClientCore(ipAdress, port);
+                return _client;
+            }
+            if (_nameUser == null) return null;
+            return null;
         }
 
         public static ClientCore GetCore()
@@ -80,14 +88,24 @@ namespace ChatLAN.Client
 
         public void JoinServer(string login)
         {
+            if (_tcpClient == null)
+            {
+                Error?.Invoke(null, "Сервер не найден");
+                return;
+            }
+
             Util.SerializeTypeObject(Util.TypeSoketMessage.Connect, login, _tcpClient.GetStream());
             byte[] b = Util.ReadAllBytes(_tcpClient);
             var k = Util.DeserializeTypeObject<string>(b);
-            if (Util.TypeSoketMessage.Ok ==
-                k
-                    .TypeSoketMessage) {
+            if (Util.TypeSoketMessage.Ok == k.TypeSoketMessage)
+            {
                 Join?.Invoke(null, null);
                 _nameUser = login;
+            }
+
+            else if (Util.TypeSoketMessage.ConflictName == k.TypeSoketMessage)
+            {
+                Error?.Invoke(null, "Такое имя занято");
             }
             else
                 Error?.Invoke(null, "Не удалось подключиться");
@@ -111,7 +129,7 @@ namespace ChatLAN.Client
                 var message = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(_tcpClient));
                 if (message.TypeSoketMessage == Util.TypeSoketMessage.Message)
                 {
-                    AddMessage?.Invoke(null,message.TObj);
+                    AddMessage?.Invoke(null, message.TObj);
                 }
             }
         }
@@ -132,6 +150,28 @@ namespace ChatLAN.Client
         {
             Login = login;
             Message = message;
+        }
+    }
+
+    class HashAdpess
+    {
+        private byte[] _ipAdress;
+        private int _port;
+
+        public HashAdpess(byte[] ipAdress, int port)
+        {
+            this._ipAdress = ipAdress;
+            this._port = port;
+        }
+
+        public bool Equals(byte[] ipAdress, int port)
+        {
+            for (int i = 0; i < 4; i++)
+                if (_ipAdress[i] != ipAdress[i])
+                    return true;
+            if (_port != port)
+                return true;
+            return false;
         }
     }
 }

@@ -74,8 +74,8 @@
     <Compile Include="Client\Pages\UserControls\ControlMessag.xaml.cs">
       <DependentUpon>ControlMessag.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Client\Pages\UserControls\ControlPanelMessage.xaml.cs">
-      <DependentUpon>ControlPanelMessage.xaml</DependentUpon>
+    <Compile Include="Client\Pages\UserControls\ControlMessagRevers.xaml.cs">
+      <DependentUpon>ControlMessagRevers.xaml</DependentUpon>
     </Compile>
     <Compile Include="Objects\Const.cs" />
     <Compile Include="Objects\ObjChat.cs" />
@@ -85,7 +85,6 @@
     <Compile Include="Objects\File.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Objects\ObjUser.cs" />
-    <Compile Include="ServerObject.cs" />
     <Compile Include="Client\ClientCore.cs" />
     <Compile Include="Server\Utils\Serializer.cs" />
     <Compile Include="Util.cs" />
@@ -105,7 +104,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Client\Pages\UserControls\ControlPanelMessage.xaml">
+    <Page Include="Client\Pages\UserControls\ControlMessagRevers.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

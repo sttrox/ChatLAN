@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="ChatLAN.Client.Pages.UserControls.ControlMessagRevers"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ChatLAN.Client.Pages.UserControls"
+             mc:Ignorable="d" 
+             Foreground="#F8C093"
+             Name="UserControl3"
+             d:DesignHeight="50" d:DesignWidth="180">
+            
+    <Grid RenderTransformOrigin="0.5,0.5">
+        <Grid.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform ScaleX="-1"/>
+                <SkewTransform/>
+                <RotateTransform/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </Grid.RenderTransform>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="17*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8*" />
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Column="1" Grid.ColumnSpan="2" Background="{Binding ElementName=UserControl3, Path=Foreground}" CornerRadius="12" Grid.RowSpan="2">
+            <Grid RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Grid.RenderTransform>
+                <Grid.RowDefinitions>
+
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <local:ControlFile HorizontalAlignment="Right" Margin="20,10,20,0"  x:Name="ControlFile" Grid.Row="0" Visibility="Collapsed"></local:ControlFile>
+                <TextBlock HorizontalAlignment="Right" Grid.Row="1"  Foreground="Black" TextWrapping="Wrap" Background="Transparent" Margin="20,10" VerticalAlignment="Center"
+                           Text="Text"  Name="TbText">
+                </TextBlock>
+            </Grid>
+        </Border>
+        <Path Panel.ZIndex="-9" Grid.Column="0" Grid.Row="1" Data="M20,0 L0,20 L20,20 " Fill="{Binding ElementName=UserControl3, Path=Foreground}"
+              Stretch="Fill" Stroke="{Binding ElementName=UserControl3, Path=Foreground}"
+              Grid.ColumnSpan="2"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Bottom" />
+    </Grid>
+</UserControl>

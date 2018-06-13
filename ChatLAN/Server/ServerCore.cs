@@ -64,18 +64,17 @@ namespace ChatLAN.Server
             return _serverCore;
         }
 
-        private void SendingMessages(Message message, string nameUser)
+        private void SendingMessages(Message message)
         {
             foreach (var client in _tcpClientsOnline)
-                if (client.Key != nameUser)
-                    Util.SerializeTypeObject(Util.TypeSoketMessage.Message, message, client.Value.GetStream());
+                Util.SerializeTypeObject(Util.TypeSoketMessage.Message, message, client.Value.GetStream());
         }
 
-        private void ReceivedMessage(Message message, string nameUser)
+        private void ReceivedMessage(Message message)
         {
             MessageReceived?.Invoke(null, message);
             _listMessage.Add(message);
-            SendingMessages(message, nameUser);
+            SendingMessages(message);
         }
 
         //todo
@@ -91,7 +90,7 @@ namespace ChatLAN.Server
                     var message = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(e));
                     Server.Pages.Server.PrintText(message.TObj.Text);
                     if (message.TypeSoketMessage == Util.TypeSoketMessage.Message)
-                        ReceivedMessage(message.TObj, nameUser);
+                        ReceivedMessage(message.TObj);
                 }
             }).Start();
         }
@@ -116,7 +115,7 @@ namespace ChatLAN.Server
                 Pages.Server.PrintText("В чат вошёл " + client.TObj); //IP Adress
                 return true;
             }
-
+            
             return false;
         }
 
@@ -142,7 +141,8 @@ namespace ChatLAN.Server
 
                     AddBadClient(tcpClient);
                     Server.Pages.Server.PrintText("Что-то пошло не так ");
-                    Util.SerializeTypeObject(Util.TypeSoketMessage.Bad, "Данные отклонены", tcpClient.GetStream());
+                    Util.SerializeTypeObject(Util.TypeSoketMessage.ConflictName, String.Empty, tcpClient.GetStream());
+                    
                 }
             }
             catch (Exception ex)

@@ -28,8 +28,17 @@ namespace ChatLAN.Client.Pages
             InitializeComponent();
             ClientCore clientCore = ClientCore.GetCore();
             clientCore.AddMessage += (sender, message) =>
-                PanelMessage.Invoke(() => { PanelMessage.Children.Add(new ControlMessag(message)
-                    { Margin = new Thickness(5), Foreground = Brushes.LightBlue}); });
+                PanelMessage.Invoke(() =>
+                {
+                    UserControl element;
+                    if (message.Name == ClientCore._nameUser)
+                        element = new ControlMessagRevers(message){Foreground = new SolidColorBrush(Color.FromArgb(255,255,218,187)) };
+                    else
+                        element = new ControlMessag(message){Foreground =Foreground = Brushes.LightBlue };
+                    element.Margin = new Thickness(5);
+               
+                    PanelMessage.Children.Add(element);
+                });
 
             new Thread(() => clientCore.ReceiveMessage()).Start();
         }

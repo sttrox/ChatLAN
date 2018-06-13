@@ -78,6 +78,7 @@ namespace ChatLAN
             Message,
             Connect,
             Disconnect,
+            ConflictName,
             Ok,
             Bad,
             ListMessage

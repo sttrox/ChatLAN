@@ -9,11 +9,9 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="PageMessager">
     <Grid Background="AntiqueWhite">
-
-        <StackPanel Name="PanelMessage">
-            <!--<userControls1:ControlMessag Width="400" HorizontalAlignment="Left" Height="Auto" Foreground="AntiqueWhite"
-                                         Text="" />-->
-        </StackPanel>
+        <ScrollViewer>
+            <StackPanel Name="PanelMessage" />
+        </ScrollViewer>
         <userControls1:ControlBarSendMessage VerticalAlignment="Bottom" />
 
     </Grid>

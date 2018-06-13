@@ -35,7 +35,7 @@ namespace ChatLAN
             }
 
             ClientCore client = ClientCore.InicializeClient(getIpAdress(TbAdress.Text), (int) NumPort.Value);
-
+            if (client == null) {MessageOnError(null,"Сервер не найден");return;}
             client.Error -= MessageOnError; //todo remove method
             client.Error += MessageOnError; //todo remove method
             client.Join -= OpenPageServer;
