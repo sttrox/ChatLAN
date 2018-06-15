@@ -17,7 +17,7 @@ namespace ChatLAN.Client
 
         private static HashAdpess _hashAdress;
         public static string _nameUser;
-        public static event EventHandler<Dictionary<string, Message>> RefreshListChat;
+        //public static event EventHandler<Dictionary<string, Message>> RefreshListChat;
         private event EventHandler<ChatMessage> AcceptMessage;
         private List<Message> _listMessage;
 
@@ -31,9 +31,10 @@ namespace ChatLAN.Client
 
         private ClientCore(byte[] ipAdress, int port)
         {
+            AcceptMessage -= OnAcceptMessage;
             AcceptMessage += OnAcceptMessage;
-            RefreshListChat?.Invoke(null, ListAllChatMessage);
-            _hashAdress = new HashAdpess(ipAdress,port);
+            //RefreshListChat?.Invoke(null, ListAllChatMessage);
+            _hashAdress = new HashAdpess(ipAdress, port);
             try
             {
                 _tcpClient = new TcpClient();
@@ -43,7 +44,7 @@ namespace ChatLAN.Client
             {
                 _tcpClient = null;
 
-                Error?.Invoke(null, "Сокет занят");
+                Error?.Invoke(null, "Подключение не установлено");
             }
 
             catch (ObjectDisposedException e)
@@ -53,8 +54,15 @@ namespace ChatLAN.Client
             }
             finally
             {
-                MainWindow.Close += (sender, args) => Disconnect();
+                MainWindow.Close -= Disconnect;
+                MainWindow.Close += Disconnect;
             }
+        }
+
+        private void Disconnect(object sender, EventArgs e)
+        {
+            _client._tcpClient?.Close(); //отключение клиента
+            Environment.Exit(0); //завершение процесса
         }
 
         private void OnAcceptMessage(object sender, ChatMessage e)
@@ -70,12 +78,13 @@ namespace ChatLAN.Client
         public static ClientCore InicializeClient(byte[] ipAdress, int port)
         {
             if (_client == null) return _client = new ClientCore(ipAdress, port);
-            if (_hashAdress.Equals(ipAdress,port))
+            if (_hashAdress.Equals(ipAdress, port))
             {
                 _client._tcpClient.Close();
                 _client = new ClientCore(ipAdress, port);
                 return _client;
             }
+
             if (_nameUser == null) return null;
             return null;
         }
@@ -88,9 +97,12 @@ namespace ChatLAN.Client
 
         public void JoinServer(string login)
         {
+           // MessageBox.Show(_tcpClient.Client.Connected.ToString());
+            
             if (_tcpClient == null)
             {
                 Error?.Invoke(null, "Сервер не найден");
+                _client = null;
                 return;
             }
 
@@ -132,12 +144,6 @@ namespace ChatLAN.Client
                     AddMessage?.Invoke(null, message.TObj);
                 }
             }
-        }
-
-        static void Disconnect()
-        {
-            _client._tcpClient?.Close(); //отключение клиента
-            Environment.Exit(0); //завершение процесса
         }
     }
 

@@ -30,10 +30,8 @@ namespace ChatLAN
         public static void SerializeTypeObject<TObject>(Util.TypeSoketMessage message, TObject objSerializ,
             NetworkStream stream)
         {
-            
-            SerializeObject(new TypeMessage<TObject>(objSerializ, message), stream); 
+            SerializeObject(new TypeMessage<TObject>(objSerializ, message), stream);
             Thread.Sleep(50);
-         
         }
 
         public static TypeMessage<TObject> DeserializeTypeObject<TObject>(byte[] bytes)
@@ -126,6 +124,9 @@ namespace ChatLAN
                     streamOut.Write(buffer, 0, size);
                 } while (streamIn.DataAvailable);
 
+                using (FileStream memoryStream =
+                    new FileStream($"{Environment.CurrentDirectory}/logRead.xml", FileMode.OpenOrCreate))
+                    memoryStream.Write(streamOut.ToArray(), 0, streamOut.ToArray().Length);
                 return streamOut;
             }
         }
