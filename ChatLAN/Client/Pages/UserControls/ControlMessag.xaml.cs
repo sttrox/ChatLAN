@@ -21,6 +21,7 @@ namespace ChatLAN.Client.Pages.UserControls
     /// </summary>
     public partial class ControlMessag : UserControl
     {
+        private File _file;
         private File File
         {
             set
@@ -28,6 +29,7 @@ namespace ChatLAN.Client.Pages.UserControls
                 if (value.Data == null) return;
                 ControlFile.Visibility = Visibility;
                 ControlFile.FileName = value?.Name;
+                _file = value;
             }
         }
 
@@ -47,6 +49,11 @@ namespace ChatLAN.Client.Pages.UserControls
             Text = message.Text;
             Nick = message.Name;
             File = message.File;
+        }
+
+        private void ControlFile_OnClick(object sender, string e)
+        {
+            _file.SaveFile();
         }
     }
 }
