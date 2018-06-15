@@ -3,11 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:ChatLAN.Client.Pages.UserControls"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <Style TargetType="Button" BasedOn="{StaticResource MetroButton}" >
+            <Setter Property="Height" Value="42"></Setter>
+            <Setter Property="Width" Value="42"></Setter>
             <Setter Property="BorderThickness" Value="0"></Setter>
             <Setter Property="BorderBrush" Value="Transparent"></Setter>
         </Style>
@@ -17,18 +18,14 @@
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="10*" />
             <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Rectangle Panel.ZIndex="-99" Fill="White" Grid.ColumnSpan="9"></Rectangle>
         <Button Name="BtnOpenFile" Grid.Column="0"  VerticalAlignment="Bottom" Height="42" Click="OpenFile">
             <Image Source="../../Data/Image/inset.png" />
         </Button>
-        <TextBox Name="TbText" BorderThickness="0" Background="White" Grid.Column="1" AcceptsReturn="True"  TextChanged="TextBoxBase_OnTextChanged"/>
-        <Button VerticalAlignment="Bottom" Grid.Column="3" Height="42" Click="SendMessage">
-            <Image Height="42" Source="../../Data/Image/sent.png" />
-        </Button>
-        <Button VerticalAlignment="Bottom" Grid.Column="2" Height="42">
-            <Image Height="42" Source="../../Data/Image/smile.png" />
+        <TextBox Name="TbText" BorderThickness="0" Background="White" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap" TextChanged="TextBoxBase_OnTextChanged"/>
+        <Button Width="42" VerticalAlignment="Bottom" Grid.Column="2" Height="42" Click="SendMessage">
+            <Image Source="../../Data/Image/sent.png" />
         </Button>
     </Grid>
 </UserControl>

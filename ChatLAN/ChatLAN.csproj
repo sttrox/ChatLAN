@@ -78,13 +78,10 @@
       <DependentUpon>ControlMessagRevers.xaml</DependentUpon>
     </Compile>
     <Compile Include="Objects\Const.cs" />
-    <Compile Include="Objects\ObjChat.cs" />
     <Compile Include="Objects\TypeMessage.cs" />
     <Compile Include="Server\ServerCore.cs" />
-    <Compile Include="Server\Utils\ClientObject.cs" />
     <Compile Include="Objects\File.cs" />
     <Compile Include="Objects\Message.cs" />
-    <Compile Include="Objects\ObjUser.cs" />
     <Compile Include="Client\ClientCore.cs" />
     <Compile Include="Server\Utils\Serializer.cs" />
     <Compile Include="Util.cs" />
@@ -128,10 +125,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Styles\Scroll.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PageMain.xaml.cs">
@@ -173,20 +166,7 @@
     <Resource Include="Client\Data\Image\inset.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Client\Data\Image\B6pW1T4c8MQ.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Client\Data\Image\inset-wh.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Client\Data\Image\sent.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Client\Data\Image\smile.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Client\Data\Image\file.png" />

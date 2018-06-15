@@ -1,25 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ChatLAN.Objects;
+﻿using ChatLAN.Objects;
 
 namespace ChatLAN.Client.Pages.UserControls
 {
-    /// <summary>
-    /// Логика взаимодействия для ControlMessagRevers.xaml
-    /// </summary>
-    public partial class ControlMessagRevers : UserControl
+    public partial class ControlMessagRevers
     {
         public ControlMessagRevers(Message message)
         {
@@ -33,7 +16,7 @@ namespace ChatLAN.Client.Pages.UserControls
             {
                 if (value.Data == null) return;
                 ControlFile.Visibility = Visibility;
-                ControlFile.FileName = value?.Name;
+                ControlFile.FileName = value.Name;
             }
         }
 

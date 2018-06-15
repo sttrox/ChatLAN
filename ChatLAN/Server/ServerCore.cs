@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using ChatLAN.Objects;
 using ChatLAN.Server.Utils;
 
@@ -17,12 +14,12 @@ namespace ChatLAN.Server
         public event EventHandler<String> Error;
         public event EventHandler<Message> MessageReceived;
 
-        private List<string> _listUserName = new List<string>();
+        private readonly List<string> _listUserName = new List<string>();
         private readonly List<Message> _listMessage;
-        private TcpListener _tcpListener;
-        private Dictionary<string, TcpClient> _tcpClientsOnline = new Dictionary<string, TcpClient>();
-        private static ServerCore _serverCore;
+        private readonly TcpListener _tcpListener;
+        private readonly Dictionary<string, TcpClient> _tcpClientsOnline = new Dictionary<string, TcpClient>();
 
+        private static ServerCore _serverCore;
 
         public void RemoveServer()
         {
@@ -42,25 +39,21 @@ namespace ChatLAN.Server
             {
                 RemoveServer();
                 Error?.Invoke(e, "Порт занят!");
-                Console.WriteLine(e);
             }
         }
 
         private ServerCore(int port)
         {
-            Util.UnhandledException += (sender, args) => Pages.Server.PrintText(args.ToString());
+            Util.Error += (sender, args) => Pages.Server.PrintText(args.ToString());
             _tcpListener = new TcpListener(IPAddress.Any, port);
-            MainWindow.Close += (sender, args) => Disconnect();
-
+            MainWindow.Close += Disconnect;
             //загрузка из памяти сообщений
             _listMessage = Serializer.DeserializeMessage();
         }
 
         public static ServerCore InicilizeServer(int port)
         {
-            if (_serverCore == null)
-                _serverCore = new ServerCore(port);
-            return _serverCore;
+            return _serverCore ?? (_serverCore = new ServerCore(port));
         }
 
         private void SendingMessages(Message message)
@@ -76,14 +69,12 @@ namespace ChatLAN.Server
             SendingMessages(message);
         }
 
-        //todo
         private void ListenClient(TcpClient e, string nameUser)
         {
             new Thread(() =>
             {
                 Thread.Sleep(500);
                 Util.SerializeTypeObject(Util.TypeSoketMessage.ListMessage, _listMessage, e.GetStream());
-
                 while (true)
                 {
                     var message = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(e));
@@ -92,10 +83,9 @@ namespace ChatLAN.Server
                         RemoveUser(nameUser);
                         return;
                     }
-
-                    Server.Pages.Server.PrintText(message.TObj.Text);
+                    Pages.Server.PrintText(message.Obj.Text);
                     if (message.TypeSoketMessage == Util.TypeSoketMessage.Message)
-                        ReceivedMessage(message.TObj);
+                        ReceivedMessage(message.Obj);
                 }
             }).Start();
         }
@@ -105,12 +95,8 @@ namespace ChatLAN.Server
             new Thread(() =>
             {
                 while (true)
-                {
-                    Thread.Sleep(500);
-
                     if (ValidationUserName(client))
                         break;
-                }
             }).Start();
         }
 
@@ -118,15 +104,12 @@ namespace ChatLAN.Server
         {
             var client = Util.DeserializeTypeObject<string>(Util.ReadAllBytes(tcpClient));
             if (client == null) return true;
-            if (client.TypeSoketMessage == Util.TypeSoketMessage.Connect && !_listUserName.Contains(client.TObj))
-            {
-                Util.SerializeTypeObject(Util.TypeSoketMessage.Ok, "Авторизация прошла успешно", tcpClient.GetStream());
-                AddClientOnline(tcpClient, client.TObj);
-                Pages.Server.PrintText("В чат вошёл " + client.TObj); //IP Adress
-                return true;
-            }
-
-            return false;
+            if (client.TypeSoketMessage != Util.TypeSoketMessage.Connect || _listUserName.Contains(client.Obj))
+                return false;
+            Util.SerializeTypeObject(Util.TypeSoketMessage.Ok, "Авторизация прошла успешно", tcpClient.GetStream());
+            AddClientOnline(tcpClient, client.Obj);
+            Pages.Server.PrintText("В чат вошёл " + client.Obj); //IP Adress
+            return true;
         }
 
         private void AddClientOnline(TcpClient client, string nameUser)
@@ -142,18 +125,17 @@ namespace ChatLAN.Server
         {
             try
             {
-                Server.Pages.Server.PrintText("Сервер запущен. Ожидание подключений...");
+                Pages.Server.PrintText("Сервер запущен. Ожидание подключений...");
                 while (true)
                 {
                     TcpClient tcpClient = _tcpListener.AcceptTcpClient();
                     if (ValidationUserName(tcpClient)) continue;
-
                     AddBadClient(tcpClient);
-                    Server.Pages.Server.PrintText("Что-то пошло не так ");
+                    Pages.Server.PrintText("Что-то пошло не так ");
                     Util.SerializeTypeObject(Util.TypeSoketMessage.ConflictName, String.Empty, tcpClient.GetStream());
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 new Thread(Listen).Start();
             }
@@ -167,14 +149,13 @@ namespace ChatLAN.Server
             _listUserName.Remove(nameUser);
         }
 
-        private void Disconnect()
+        private void Disconnect(object sender, EventArgs e)
         {
-            _tcpListener.Stop(); //остановка сервера
-
+            Serializer.SerializeMessage(_listMessage);
+            _tcpListener.Stop();
             foreach (var client in _tcpClientsOnline)
                 client.Value.Close();
-
-            Environment.Exit(0); //завершение процесса
+            Environment.Exit(0);
         }
     }
 }

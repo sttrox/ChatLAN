@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:ChatLAN.Client.Pages.UserControls"
     x:Class="ChatLAN.Client.Pages.UserControls.ControlMessag"
     mc:Ignorable="d"
-    Name="UserControl3"
+    Name="UcMessag"
     d:DesignHeight="100" d:DesignWidth="400" Foreground="Beige">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -19,7 +19,7 @@
             <RowDefinition Height="5*" />
         </Grid.RowDefinitions>
 
-        <Border Grid.Column="1" Grid.ColumnSpan="2" Background="{Binding ElementName=UserControl3, Path=Foreground}"
+        <Border Grid.Column="1" Grid.ColumnSpan="2" Background="{Binding ElementName=UcMessag, Path=Foreground}"
                 CornerRadius="12" Grid.RowSpan="2">
             <Grid>
                 <Grid.RowDefinitions>
@@ -35,8 +35,8 @@
             </Grid>
         </Border>
         <Path Panel.ZIndex="-9" Grid.Column="0" Grid.Row="1" Data="M20,0 L0,20 L20,20 "
-              Fill="{Binding ElementName=UserControl3, Path=Foreground}"
-              Stretch="Fill" Stroke="{Binding ElementName=UserControl3, Path=Foreground}"
+              Fill="{Binding ElementName=UcMessag, Path=Foreground}"
+              Stretch="Fill" Stroke="{Binding ElementName=UcMessag, Path=Foreground}"
               Grid.ColumnSpan="2"
               HorizontalAlignment="Left"
               VerticalAlignment="Bottom" />

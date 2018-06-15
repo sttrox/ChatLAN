@@ -2,52 +2,37 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Windows;
 using ChatLAN.Objects;
 
 namespace ChatLAN.Client
 {
     public class ClientCore
     {
-        public event EventHandler Join;
-        public event EventHandler<Message> ChatAdd;
         public event EventHandler<Message> AddMessage;
+        public event EventHandler<string> Error;
+        public event EventHandler Join;
+        public static string NameUser;
 
         private static HashAdpess _hashAdress;
-        public static string _nameUser;
-        //public static event EventHandler<Dictionary<string, Message>> RefreshListChat;
-        private event EventHandler<ChatMessage> AcceptMessage;
-        private List<Message> _listMessage;
-
-        public static Dictionary<string, Message> Chats = new Dictionary<string, Message>();
-        public static List<string> ListAllUsers = new List<string>();
-        public static Dictionary<string, Message> ListAllChatMessage = new Dictionary<string, Message>();
-        public event EventHandler<string> Error;
-
         private static ClientCore _client;
+        private List<Message> _listMessage;
         private readonly TcpClient _tcpClient;
 
         private ClientCore(byte[] ipAdress, int port)
         {
-            AcceptMessage -= OnAcceptMessage;
-            AcceptMessage += OnAcceptMessage;
-            //RefreshListChat?.Invoke(null, ListAllChatMessage);
             _hashAdress = new HashAdpess(ipAdress, port);
             try
             {
                 _tcpClient = new TcpClient();
                 _tcpClient.Connect(new IPAddress(ipAdress), port);
             }
-            catch (SocketException e)
+            catch (SocketException)
             {
                 _tcpClient = null;
-
                 Error?.Invoke(null, "Подключение не установлено");
             }
 
-            catch (ObjectDisposedException e)
+            catch (ObjectDisposedException)
             {
                 _tcpClient = null;
                 Error?.Invoke(null, "Соединение разорвано");
@@ -59,22 +44,6 @@ namespace ChatLAN.Client
             }
         }
 
-        private void Disconnect(object sender, EventArgs e)
-        {
-            _client._tcpClient?.Close(); //отключение клиента
-            Environment.Exit(0); //завершение процесса
-        }
-
-        private void OnAcceptMessage(object sender, ChatMessage e)
-        {
-            if (ListAllChatMessage.ContainsKey(e.Login))
-                //todo Data
-                ListAllChatMessage[e.Login].Text = e.Message.Text;
-            else
-                ListAllChatMessage.Add(e.Login, e.Message);
-        }
-
-
         public static ClientCore InicializeClient(byte[] ipAdress, int port)
         {
             if (_client == null) return _client = new ClientCore(ipAdress, port);
@@ -85,7 +54,7 @@ namespace ChatLAN.Client
                 return _client;
             }
 
-            if (_nameUser == null) return null;
+            if (NameUser == null) return null;
             return null;
         }
 
@@ -94,6 +63,7 @@ namespace ChatLAN.Client
             _client._tcpClient.Close();
             _client = null;
         }
+
         public static ClientCore GetCore()
         {
             if (_client == null) throw new NullReferenceException("Необходимо инициализировать клиент");
@@ -102,8 +72,6 @@ namespace ChatLAN.Client
 
         public void JoinServer(string login)
         {
-           // MessageBox.Show(_tcpClient.Client.Connected.ToString());
-            
             if (_tcpClient == null)
             {
                 Error?.Invoke(null, "Сервер не найден");
@@ -116,19 +84,17 @@ namespace ChatLAN.Client
             var k = Util.DeserializeTypeObject<string>(b);
             if (k == null)
             {
-                Error?.Invoke(null,"Что-то пошло не так. \n Попробуйте снова");
+                Error?.Invoke(null, "Что-то пошло не так. \n Попробуйте снова");
                 return;
             }
+
             if (Util.TypeSoketMessage.Ok == k.TypeSoketMessage)
             {
                 Join?.Invoke(null, null);
-                _nameUser = login;
+                NameUser = login;
             }
-
             else if (Util.TypeSoketMessage.ConflictName == k.TypeSoketMessage)
-            {
                 Error?.Invoke(null, "Такое имя занято");
-            }
             else
                 Error?.Invoke(null, "Не удалось подключиться");
         }
@@ -140,44 +106,34 @@ namespace ChatLAN.Client
 
         public void ReceiveMessage()
         {
-            _listMessage = Util.DeserializeTypeObject<List<Message>>(Util.ReadAllBytes(_tcpClient)).TObj;
+            _listMessage = Util.DeserializeTypeObject<List<Message>>(Util.ReadAllBytes(_tcpClient)).Obj;
             foreach (var message in _listMessage)
-            {
                 AddMessage?.Invoke(null, message);
-            }
 
             while (true)
             {
                 var message = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(_tcpClient));
                 if (message.TypeSoketMessage == Util.TypeSoketMessage.Message)
-                {
-                    AddMessage?.Invoke(null, message.TObj);
-                }
+                    AddMessage?.Invoke(null, message.Obj);
             }
         }
-    }
 
-    internal class ChatMessage
-    {
-        public string Login;
-        public Message Message;
-
-        public ChatMessage(string login, Message message)
+        private static void Disconnect(object sender, EventArgs e)
         {
-            Login = login;
-            Message = message;
+            _client._tcpClient?.Close();
+            Environment.Exit(0);
         }
     }
 
     class HashAdpess
     {
-        private byte[] _ipAdress;
-        private int _port;
+        private readonly byte[] _ipAdress;
+        private readonly int _port;
 
         public HashAdpess(byte[] ipAdress, int port)
         {
-            this._ipAdress = ipAdress;
-            this._port = port;
+            _ipAdress = ipAdress;
+            _port = port;
         }
 
         public bool Equals(byte[] ipAdress, int port)

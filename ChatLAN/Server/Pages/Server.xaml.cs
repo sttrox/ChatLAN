@@ -1,13 +1,8 @@
-﻿using System;
-using System.Threading;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace ChatLAN.Server.Pages
 {
-    /// <summary>
-    /// Логика взаимодействия для Server.xaml
-    /// </summary>
-    public partial class Server : Page
+    public partial class Server
     {
         private static StackPanel _stackPanel;
 
@@ -18,6 +13,6 @@ namespace ChatLAN.Server.Pages
         }
 
         public static void PrintText(string text) =>
-            _stackPanel.Dispatcher.Invoke(() => _stackPanel.Children.Add(new TextBox() {Text = text}));
+            _stackPanel.Dispatcher.Invoke(() => _stackPanel.Children.Add(new TextBox{Text = text}));
     }
 }

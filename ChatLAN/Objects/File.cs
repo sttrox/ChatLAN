@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using ChatLAN.Server.Utils;
 using Microsoft.Win32;
 
 namespace ChatLAN.Objects
@@ -17,7 +16,7 @@ namespace ChatLAN.Objects
             {
                 FileName = Name
             };
-            if ((bool) saveFileDialog.ShowDialog())
+            if (saveFileDialog.ShowDialog().HasValue)
                 using (FileStream fileStream = new FileStream(saveFileDialog.FileName, FileMode.OpenOrCreate))
                     fileStream.Write(Data, 0, Data.Length);
         }

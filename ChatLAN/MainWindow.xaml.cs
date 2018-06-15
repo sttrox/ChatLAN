@@ -6,11 +6,21 @@ using MahApps.Metro.Controls.Dialogs;
 
 namespace ChatLAN
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow
     {
+        public new static event EventHandler Close;
+        private static MetroWindow _metroWindow;
+        private static Frame _frame;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            _metroWindow = this;
+            _frame = Frame;
+            Closed += (sender, args) => Close?.Invoke(sender, null);
+            OpenPage(new PageMain());
+        }
+
         public static void ShowMessage(string title, string message)
         {
             _metroWindow.Dispatcher.Invoke(() =>
@@ -22,25 +32,7 @@ namespace ChatLAN
 
         public static void OpenPage(object obj)
         {
-            
             _frame.Navigate(obj);
-        }
-        public static void OpenPage(string pathToPage)
-        {
-            Uri u = new Uri(pathToPage, UriKind.Relative);
-            _frame.Invoke(() => _frame.Source = u);
-        }
-
-        public new static event EventHandler Close;
-
-        private static MetroWindow _metroWindow;
-        private static Frame _frame;
-        public MainWindow()
-        {
-            InitializeComponent();
-            _metroWindow = this;
-            _frame = this.Frame;
-            this.Closed += (sender, args) => Close?.Invoke(sender, null);
         }
     }
 }

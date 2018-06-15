@@ -1,22 +1,14 @@
 ﻿using System;
-using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
 using ChatLAN.Client;
 using ChatLAN.Client.Pages;
-using ChatLAN.Objects;
 using ChatLAN.Server;
-using ChatLAN.Server.Utils;
 
 namespace ChatLAN
 {
-    /// <summary>
-    /// Логика взаимодействия для PageMain.xaml
-    /// </summary>
-    public partial class PageMain : Page
+    public partial class PageMain
     {
         public PageMain()
         {
@@ -35,29 +27,30 @@ namespace ChatLAN
             }
 
             byte[] ipAdress = getIpAdress(TbAdress.Text);
-            ClientCore client = ClientCore.InicializeClient(ipAdress, (int) NumPort.Value);
-            if (client == null) {ClientCore.RemoveClient(); MessageOnError(null,"Что-то пошло не так, попробуйте снова");return;}
-            client.Error -= MessageOnError; //todo remove method
-            client.Error += MessageOnError; //todo remove method
+            ClientCore client = ClientCore.InicializeClient(ipAdress, int.Parse(NumPort.Value.ToString()));
+            if (client == null)
+            {
+                ClientCore.RemoveClient();
+                MessageOnError(null, "Что-то пошло не так, попробуйте снова");
+                return;
+            }
+
+            client.Error -= MessageOnError;
+            client.Error += MessageOnError;
             client.Join -= OpenPageServer;
             client.Join += OpenPageServer;
             client.JoinServer(TbLogin.Text);
-
         }
-
-       
 
         private void BtnStart_OnClick(object sender, RoutedEventArgs e)
         {
-            ServerCore server = ServerCore.InicilizeServer((int) NumPort.Value);
+            ServerCore server = ServerCore.InicilizeServer(int.Parse(NumPort.Value.ToString()));
             server.Error -= MessageOnError;
             server.Error += MessageOnError;
             server.ServerStart -= OpenPageServer;
             server.ServerStart += OpenPageServer;
             server.Start();
         }
-
-       
 
         private bool ValidationAdress(string text)
         {
@@ -67,14 +60,11 @@ namespace ChatLAN
 
             string[] digits = text.Split('.');
             if (digits.Length != 4) return false;
-
             foreach (var s in digits)
                 if (s == string.Empty)
                     return false;
-
             return true;
         }
-
 
         private byte[] getIpAdress(string ipAdress)
         {
@@ -89,11 +79,10 @@ namespace ChatLAN
             return bytes;
         }
 
-
         private void PrintAndReturnButton(string title, string message)
         {
             MainWindow.ShowMessage(title, message);
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 ProgressRing.Visibility = Visibility.Collapsed;
                 PanelOfClient.Visibility = Visibility.Visible;
@@ -104,6 +93,7 @@ namespace ChatLAN
         {
             MainWindow.OpenPage(new PageMessager());
         }
+
         private void OpenPageServer(object sender, TcpListener e)
         {
             MainWindow.OpenPage(new Server.Pages.Server());
@@ -112,7 +102,7 @@ namespace ChatLAN
         private void MessageOnError(object sender, string e)
         {
             MainWindow.ShowMessage("Ошибка", e);
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 ProgressRing.Visibility = Visibility.Collapsed;
                 PanelOfClient.Visibility = Visibility.Visible;
