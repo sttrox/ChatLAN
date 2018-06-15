@@ -89,6 +89,11 @@ namespace ChatLAN.Client
             return null;
         }
 
+        public static void RemoveClient()
+        {
+            _client._tcpClient.Close();
+            _client = null;
+        }
         public static ClientCore GetCore()
         {
             if (_client == null) throw new NullReferenceException("Необходимо инициализировать клиент");
@@ -109,6 +114,11 @@ namespace ChatLAN.Client
             Util.SerializeTypeObject(Util.TypeSoketMessage.Connect, login, _tcpClient.GetStream());
             byte[] b = Util.ReadAllBytes(_tcpClient);
             var k = Util.DeserializeTypeObject<string>(b);
+            if (k == null)
+            {
+                Error?.Invoke(null,"Что-то пошло не так. \n Попробуйте снова");
+                return;
+            }
             if (Util.TypeSoketMessage.Ok == k.TypeSoketMessage)
             {
                 Join?.Invoke(null, null);

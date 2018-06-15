@@ -47,13 +47,12 @@ namespace ChatLAN
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(TObject));
                 using (MemoryStream memory = new MemoryStream(bytes))
-
                     temp = (TObject) serializer.Deserialize(memory);
             }
             catch (InvalidOperationException e)
             {
-                MessageBox.Show(Encoding.UTF8.GetString(bytes));
-                UnhandledException?.Invoke(null, new UnhandledExceptionEventArgs(e, false));
+                Error?.Invoke(null, $"Принятое сообщение содержит ошибку");
+                return temp;
             }
 
             return temp;
@@ -113,21 +112,30 @@ namespace ChatLAN
 
         public static MemoryStream ReadAllByte(TcpClient tcpClient)
         {
-            using (MemoryStream streamOut = new MemoryStream())
+            try
             {
-                NetworkStream streamIn = tcpClient.GetStream();
-                byte[] buffer = new byte[64];
-                int size = 0;
-                do
+                using (MemoryStream streamOut = new MemoryStream())
                 {
-                    size = streamIn.Read(buffer, 0, buffer.Length);
-                    streamOut.Write(buffer, 0, size);
-                } while (streamIn.DataAvailable);
+                    NetworkStream streamIn = tcpClient.GetStream();
+                    byte[] buffer = new byte[64];
+                    int size = 0;
+                    do
+                    {
+                        size = streamIn.Read(buffer, 0, buffer.Length);
+                        streamOut.Write(buffer, 0, size);
+                    } while (streamIn.DataAvailable);
 
-                using (FileStream memoryStream =
-                    new FileStream($"{Environment.CurrentDirectory}/logRead.xml", FileMode.OpenOrCreate))
-                    memoryStream.Write(streamOut.ToArray(), 0, streamOut.ToArray().Length);
-                return streamOut;
+                    using (FileStream memoryStream =
+                        new FileStream($"{Environment.CurrentDirectory}/logRead.xml", FileMode.OpenOrCreate))
+                        memoryStream.Write(streamOut.ToArray(), 0, streamOut.ToArray().Length);
+                    return streamOut;
+                }
+            }
+            catch (Exception e)
+            {
+                return new MemoryStream();
+                //Console.WriteLine(e);
+                //throw;
             }
         }
 

@@ -36,7 +36,7 @@ namespace ChatLAN
 
             byte[] ipAdress = getIpAdress(TbAdress.Text);
             ClientCore client = ClientCore.InicializeClient(ipAdress, (int) NumPort.Value);
-            
+            if (client == null) {ClientCore.RemoveClient(); MessageOnError(null,"Что-то пошло не так, попробуйте снова");return;}
             client.Error -= MessageOnError; //todo remove method
             client.Error += MessageOnError; //todo remove method
             client.Join -= OpenPageServer;

@@ -19,7 +19,6 @@ namespace ChatLAN.Server
 
         private List<string> _listUserName = new List<string>();
         private readonly List<Message> _listMessage;
-        private event EventHandler<TcpClient> ClientOnlineAdd;
         private TcpListener _tcpListener;
         private Dictionary<string, TcpClient> _tcpClientsOnline = new Dictionary<string, TcpClient>();
         private static ServerCore _serverCore;
@@ -88,6 +87,12 @@ namespace ChatLAN.Server
                 while (true)
                 {
                     var message = Util.DeserializeTypeObject<Message>(Util.ReadAllBytes(e));
+                    if (message == null)
+                    {
+                        RemoveUser(nameUser);
+                        return;
+                    }
+
                     Server.Pages.Server.PrintText(message.TObj.Text);
                     if (message.TypeSoketMessage == Util.TypeSoketMessage.Message)
                         ReceivedMessage(message.TObj);
@@ -100,14 +105,19 @@ namespace ChatLAN.Server
             new Thread(() =>
             {
                 while (true)
+                {
+                    Thread.Sleep(500);
+
                     if (ValidationUserName(client))
                         break;
+                }
             }).Start();
         }
 
         private bool ValidationUserName(TcpClient tcpClient)
         {
             var client = Util.DeserializeTypeObject<string>(Util.ReadAllBytes(tcpClient));
+            if (client == null) return true;
             if (client.TypeSoketMessage == Util.TypeSoketMessage.Connect && !_listUserName.Contains(client.TObj))
             {
                 Util.SerializeTypeObject(Util.TypeSoketMessage.Ok, "Авторизация прошла успешно", tcpClient.GetStream());
@@ -115,7 +125,7 @@ namespace ChatLAN.Server
                 Pages.Server.PrintText("В чат вошёл " + client.TObj); //IP Adress
                 return true;
             }
-            
+
             return false;
         }
 
@@ -123,7 +133,6 @@ namespace ChatLAN.Server
         {
             _listUserName.Add(nameUser);
             _tcpClientsOnline.Add(nameUser, client);
-            ClientOnlineAdd?.Invoke(null, client);
             ListenClient(client, nameUser);
         }
 
@@ -142,14 +151,20 @@ namespace ChatLAN.Server
                     AddBadClient(tcpClient);
                     Server.Pages.Server.PrintText("Что-то пошло не так ");
                     Util.SerializeTypeObject(Util.TypeSoketMessage.ConflictName, String.Empty, tcpClient.GetStream());
-                    
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Disconnect();
+                new Thread(Listen).Start();
             }
+        }
+
+        private void RemoveUser(string nameUser)
+        {
+            Pages.Server.PrintText($"Клиент {nameUser} отключился");
+            _tcpClientsOnline[nameUser].Close();
+            _tcpClientsOnline.Remove(nameUser);
+            _listUserName.Remove(nameUser);
         }
 
         private void Disconnect()
