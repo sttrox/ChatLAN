@@ -8,7 +8,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="PageMessager">
     <Grid Background="AntiqueWhite">
-        <ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Name="PanelMessage" />
         </ScrollViewer>
         <userControls1:ControlBarSendMessage VerticalAlignment="Bottom" />

@@ -46,7 +46,6 @@ namespace ChatLAN
             }
             catch (InvalidOperationException)
             {
-                Error?.Invoke(null, "Принятое сообщение содержит ошибку");
                 return temp;
             }
 

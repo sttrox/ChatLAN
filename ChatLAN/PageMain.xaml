@@ -8,7 +8,7 @@
       Title="PageMain"
       xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
     <Grid>
-        <StackPanel HorizontalAlignment="Center" Width="300">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
             <TextBlock HorizontalAlignment="Center">Режим работы</TextBlock>
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <TextBlock Padding="5" x:Name="TbServer">
@@ -67,11 +67,6 @@
                 Maximum="65536"
                 Minimum="80" />
 
-            <TextBlock>Логин</TextBlock>
-            <TextBox Name="TbLogin">Login</TextBox>
-            <TextBlock>Пароль</TextBlock>
-            <TextBox Name="TbPass">1234</TextBox>
-
 
             <StackPanel Name="PanelOfServer">
                 <StackPanel.Style>
@@ -89,7 +84,7 @@
                     Запустить
                 </Button>
             </StackPanel>
-            <Grid Name="PanelOfClient" Margin="0,9">
+            <Grid Name="PanelOfClient" Margin="0,0">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
@@ -101,8 +96,11 @@
                     </Style>
 
                 </Grid.Style>
-
-                <Button Margin="20,0" Name="BtnSignIn" Click="BtnJoinOnClick"> Авторизироваться</Button>
+                <StackPanel>
+                    <TextBlock>Логин</TextBlock>
+                    <TextBox Name="TbLogin">Login</TextBox>
+                    <Button Margin="20,10" Name="BtnSignIn" Click="BtnJoinOnClick">Авторизироваться</Button>
+                </StackPanel>
             </Grid>
             <mah:ProgressRing Name="ProgressRing" Visibility="Collapsed" Height="42" Width="42" />
         </StackPanel>

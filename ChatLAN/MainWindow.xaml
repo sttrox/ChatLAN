@@ -4,6 +4,8 @@
                  Title="ChatLAN"
                  Height="350"
                  Width="525"
+                 MinHeight="250"
+                 MinWidth="450"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
     <Frame Name="Frame" x:FieldModifier="private" NavigationUIVisibility="Hidden" Source="PageMain.xaml" />
 </mah:MetroWindow>

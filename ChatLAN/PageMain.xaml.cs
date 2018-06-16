@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using ChatLAN.Client;
@@ -27,19 +28,26 @@ namespace ChatLAN
             }
 
             byte[] ipAdress = getIpAdress(TbAdress.Text);
-            ClientCore client = ClientCore.InicializeClient(ipAdress, int.Parse(NumPort.Value.ToString()));
-            if (client == null)
-            {
-                ClientCore.RemoveClient();
-                MessageOnError(null, "Что-то пошло не так, попробуйте снова");
-                return;
-            }
+            int port = int.Parse(NumPort.Value.ToString());
+            string login = TbLogin.Text;
+            ClientCore client;
 
-            client.Error -= MessageOnError;
-            client.Error += MessageOnError;
-            client.Join -= OpenPageServer;
-            client.Join += OpenPageServer;
-            client.JoinServer(TbLogin.Text);
+            new Thread(() =>
+            {
+                client = ClientCore.InicializeClient(ipAdress, port);
+                if (client == null)
+                {
+                    ClientCore.RemoveClient();
+                    MessageOnError(null, "Что-то пошло не так, попробуйте снова");
+                    return;
+                }
+
+                client.Error -= MessageOnError;
+                client.Error += MessageOnError;
+                client.Join -= OpenPageServer;
+                client.Join += OpenPageServer;
+                client.JoinServer(login);
+            }).Start();
         }
 
         private void BtnStart_OnClick(object sender, RoutedEventArgs e)
@@ -91,7 +99,7 @@ namespace ChatLAN
 
         private void OpenPageServer(object sender, EventArgs e)
         {
-            MainWindow.OpenPage(new PageMessager());
+            MainWindow.OpenPage(@"Client\Pages\PageMessager.xaml");
         }
 
         private void OpenPageServer(object sender, TcpListener e)

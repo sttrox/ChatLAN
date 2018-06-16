@@ -120,7 +120,7 @@ namespace ChatLAN.Client
 
         private static void Disconnect(object sender, EventArgs e)
         {
-            _client._tcpClient?.Close();
+            _client?._tcpClient?.Close();
             Environment.Exit(0);
         }
     }

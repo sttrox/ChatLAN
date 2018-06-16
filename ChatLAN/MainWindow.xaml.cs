@@ -32,7 +32,10 @@ namespace ChatLAN
 
         public static void OpenPage(object obj)
         {
-            _frame.Navigate(obj);
+            _frame.Invoke(() => _frame.Navigate(obj));
+        }public static void OpenPage(string path)
+        {
+            _frame.Invoke(() => _frame.Navigate(new Uri(path, UriKind.Relative)));
         }
     }
 }
